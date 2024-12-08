@@ -5,7 +5,8 @@
 # include <sys/types.h>
 # include <sys/socket.h>
 #include <arpa/inet.h>
-
+#include <pthread.h>
+#include <unistd.h>
 
 #include "parametres.h"
 #include "signal.h"
@@ -43,6 +44,24 @@ int checkPort(){
    return( 0 < atoi(port) && atoi(port) <= 65535);
    }
    
+
+
+void* writerThread(void *arg){
+   int *soket = (int * )arg;
+   char* message = NULL;
+   size_t size_mess = 0;
+   ssize_t code;
+
+   pthread_t second_thread;
+
+
+   while(getline(&message, &size_mess, stdin) > 0){
+      write(*soket, message, sizeof(message));
+   }
+
+   
+   return NULL;
+}
 
 
 int main(int argc, char* argv[]) {
@@ -91,8 +110,6 @@ int main(int argc, char* argv[]) {
 
    if(checkIP() == 1){
       inet_pton(AF_INET, getenv(IP_name), &serv_addr.sin_addr);
-      printf("ici");
-
    }
    else{
       inet_pton(AF_INET, ip, &serv_addr.sin_addr);
@@ -103,6 +120,14 @@ int main(int argc, char* argv[]) {
       perror("SOCKET NON FAIT");
       exit(1);
    }
+
+
+   // THREADS
+   pthread_t origin_thread;
+   
+   pthread_create(&origin_thread, NULL, &writerThread, &sock);
+
+   pthread_join(origin_thread, NULL);
 
 
    LibererMessageSuspendu(messageSuspendu);
