@@ -10,10 +10,10 @@
 #include <arpa/inet.h>
 
 
-#define MAX_CLIENTS 1000
+#define MAX_CLIENTS 2
 #define MAX_LEN_MESSAGE 1024
 #define PORT_PAR_DEFAULT 1234
-#define MAX_CONNEXIONS 5
+#define MAX_CONNEXIONS 1
 
 
 typedef struct {
@@ -127,6 +127,18 @@ int addClient(int socket_fd, struct sockaddr_in address) {
    }
 }
 
+int count_active_clients() {
+    int count = 0;
+    pthread_mutex_lock(&clients_mutex);
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (clients[i].is_active) {
+            count++;
+        }
+    }
+    pthread_mutex_unlock(&clients_mutex);
+    return count;
+}
+
 void remove_client(int client_socket) {
     pthread_mutex_lock(&clients_mutex);
     for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -166,11 +178,21 @@ void run_server(int server_socket) {
         struct sockaddr_in client_address;
         socklen_t client_len = sizeof(client_address);
 
+        if (count_active_clients() >= MAX_CLIENTS) {
+        sleep(1); // Attendre avant de réessayer
+        continue;
+    }
+
         int client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_len);
         if (client_socket < 0) {
             perror("accept");
             continue;
         }
+
+        if (addClient(client_socket, client_address) == -1) {
+        fprintf(stderr, "Erreur lors de l'ajout du client\n");
+        close(client_socket);
+    }
 
         printf("Nouveau client connecté : %s:%d\n",
                inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
