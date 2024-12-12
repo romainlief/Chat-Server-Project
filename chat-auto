@@ -1,2 +1,26 @@
 #!/bin/bash
 
+main() {
+
+    # Initialisation des valeurs
+    dest=""
+    input=""
+    
+    # Boucles de lecture
+    echo "Entrez le pseudo du destinataire: "
+    while read -r dest; do
+        while read -r input; do
+            echo "$dest : $input" # > programme chat => utiliser des pipes ?
+                                # ou juste | chat ?
+        done
+        echo "Entrez un nouveau pseudo pour le destinataire ou utilisez CTRL-D pour arrêter le programme: "
+    done
+
+}
+
+# Lancement du programme chat
+# Nous n'utilisons pas 'exec' ici car ceci remplacerait le processus lancé par ce script par le programme chat
+current_dir=$(dirname "$0")
+$current_dir/chat
+
+main
