@@ -5,8 +5,10 @@ main() {
     # Initialisation des valeurs
     dest=""
     input=""
+    current_dir=$(dirname "$0")
     
     # Boucles de lecture
+    {
     echo "Entrez le pseudo du destinataire: "
     while read -r dest; do
         while read -r input; do
@@ -15,12 +17,8 @@ main() {
         done
         echo "Entrez un nouveau pseudo pour le destinataire ou utilisez CTRL-D pour arrêter le programme: "
     done
+    } | $current_dir/chat # Nous n'utilisons pas 'exec' ici car ceci remplacerait le processus lancé par ce script par le programme chat
 
 }
-
-# Lancement du programme chat
-# Nous n'utilisons pas 'exec' ici car ceci remplacerait le processus lancé par ce script par le programme chat
-current_dir=$(dirname "$0")
-$current_dir/chat
 
 main
