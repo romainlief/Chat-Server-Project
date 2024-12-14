@@ -52,23 +52,26 @@ int checkPort(){
 
 void * readerThread(void *arg){
    Arguments * argv = (Arguments *) arg;
-   // char* message = NULL;
-   // char buffer[256];
+   char* message = NULL;
+   char buffer[256];
 
-   // while(read(socket, buffer, sizeof(buffer)) > 0){
-   //    if (!manuel_mode) {
-   //       if (bot_mode) {
-   //       printf("[%s] %s", pseudo_destinataire, buffer);
-   //       } else {
-   //       printf("[\x1B[4m%s\x1B[0m] %s", pseudo_destinataire, buffer);
-   //       }
-   //       fflush(stdout);
-   //    }
+   while(read(*argv->socket, buffer, sizeof(buffer)) > 0){
+      char * name = strtok(buffer, " ");
+      char * message = strtok(NULL, "");
+      if (argv->options.modeBot) {
+         printf("[%s] %s", name, buffer);
+      } else {
+         printf("[\x1B[4m%s\x1B[0m] %s", name, buffer);
+      }
+
+
+      fflush(stdout);
+      
 
       return NULL;
 
    }
-// }
+}
 
 void* writerThread(void *arg){
    Arguments * argv = (Arguments *) arg;
@@ -156,7 +159,7 @@ int main(int argc, char* argv[]) {
       perror("SOCKET NON FAIT");
       exit(1);
    }
-
+   
 
    Arguments argument;
    argument.socket = &sock;
