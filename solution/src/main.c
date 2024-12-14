@@ -13,6 +13,10 @@
 #include "mempartagee.h"
 #include "processus.h"
 
+typedef struct {
+   int* socket;
+   OptionsProgramme options;
+} Arguments;
 
 
 
@@ -45,23 +49,49 @@ int checkPort(){
    }
    
 
+void * readerThread(void *arg){
+   Arguments * argv = (Arguments *) arg;
+   // char* message = NULL;
+   // char buffer[256];
+
+   // while(read(socket, buffer, sizeof(buffer)) > 0){
+   //    if (!manuel_mode) {
+   //       if (bot_mode) {
+   //       printf("[%s] %s", pseudo_destinataire, buffer);
+   //       } else {
+   //       printf("[\x1B[4m%s\x1B[0m] %s", pseudo_destinataire, buffer);
+   //       }
+   //       fflush(stdout);
+   //    }
+
+      return NULL;
+
+   }
+// }
 
 void* writerThread(void *arg){
-   int *soket = (int * )arg;
+   Arguments * argv = (Arguments *) arg;
+   
+   int *soket = argv->socket;
    char* message = NULL;
    size_t size_mess = 0;
    ssize_t code;
 
    pthread_t second_thread;
+   pthread_create(&second_thread, NULL, &readerThread, &socket);
+   pthread_join(second_thread, NULL);
 
-
-   while(getline(&message, &size_mess, stdin) > 0){
+   while((code = getline(&message, &size_mess, stdin)) > 0){
+      // veroiller socket
       write(*soket, message, sizeof(message));
+      // deverouiller socket
    }
 
    
    return NULL;
 }
+
+
 
 
 int main(int argc, char* argv[]) {
@@ -122,10 +152,14 @@ int main(int argc, char* argv[]) {
    }
 
 
+   Arguments argument;
+   argument.socket = &sock;
+   argument.options = options;
+
    // THREADS
    pthread_t origin_thread;
    
-   pthread_create(&origin_thread, NULL, &writerThread, &sock);
+   pthread_create(&origin_thread, NULL, &writerThread, &argument);
 
    pthread_join(origin_thread, NULL);
 
