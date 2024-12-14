@@ -16,6 +16,7 @@
 typedef struct {
    int* socket;
    OptionsProgramme options;
+   char utilisateur[30]; 
 } Arguments;
 
 
@@ -83,6 +84,11 @@ void* writerThread(void *arg){
 
    while((code = getline(&message, &size_mess, stdin)) > 0){
       // veroiller socket
+      if (!argv->options.modeBot) {
+         printf("[\x1B[4m%s\x1B[0m] %s", argv->utilisateur, message);
+         fflush(stdout);
+      }
+
       write(*soket, message, sizeof(message));
       // deverouiller socket
    }
@@ -155,6 +161,8 @@ int main(int argc, char* argv[]) {
    Arguments argument;
    argument.socket = &sock;
    argument.options = options;
+   strcpy(argument.utilisateur, argv[1]);
+
 
    // THREADS
    pthread_t origin_thread;

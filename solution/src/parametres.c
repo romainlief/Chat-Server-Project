@@ -8,7 +8,7 @@
 
 static void VerifierValiditePseudonymes(int argc, char* argv[]) {
    if (argc < 2) {
-      fputs("chat pseudo_utilisateur pseudo_destinataire [--bot] [--manuel]\n", stderr);
+      fputs("chat pseudo_utilisateur [--bot] [--manuel]\n", stderr);
       exit(CODE_RETOUR_PARAMETRES_MANQUANTS);
    }
 
