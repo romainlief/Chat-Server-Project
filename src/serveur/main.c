@@ -13,6 +13,7 @@
 #define MAX_LEN_MESSAGE 1024
 #define PORT_PAR_DEFAULT 1234
 #define MAX_CONNEXIONS 1
+#define MAX_LEN_PSEUDO 30
 
 typedef struct
 {
@@ -20,7 +21,7 @@ typedef struct
     struct sockaddr_in address; // Adresse du client
     pthread_t thread_id;        // Thread associé
     int is_active;              // Indique si le client est actif
-    char pseudo[30];            // Pseudonyme du client
+    char pseudo[MAX_LEN_PSEUDO];            // Pseudonyme du client
 } client_t;
 
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex pour synchroniser l'accès au tableau des clients
@@ -188,18 +189,18 @@ void remove_client(int client_socket)
     pthread_mutex_unlock(&clients_mutex);
 }
 
+
 /**
  * @brief Gère les messages reçus d'un client
  *
  * @param client_socket le descripteur du socket du client
  */
-void handle_client(int client_socket)
-{
+void handle_client(int client_socket) {
     char buffer[MAX_LEN_MESSAGE];
     ssize_t bytes_read;
+    int is_first_message = 1;
 
-    while ((bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0)
-    {
+    while ((bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0) {
         buffer[bytes_read] = '\0'; // Null-terminate la chaîne reçue
         printf("Message reçu du client : %s\n", buffer);
 
@@ -208,22 +209,27 @@ void handle_client(int client_socket)
         char *pseudo_receveur = strtok(NULL, " ");
         char *message = strtok(NULL, "\0");
 
-        if (pseudo_envoyeur != NULL)
-        {
+        if (!is_first_message && (message == NULL || pseudo_envoyeur == NULL || pseudo_receveur == NULL)) {
+            send(client_socket, "Message invalide\n", strlen("Message invalide\n"), 0);
+            continue;
+        }
+
+        if (pseudo_envoyeur != NULL) {
             printf("Pseudo envoyeur : %s\n", pseudo_envoyeur);
         }
 
-        if (pseudo_receveur != NULL)
-        {
+        if (pseudo_receveur != NULL) {
             printf("Pseudo receveur : %s\n", pseudo_receveur);
         }
 
-        if (message != NULL)
-        {
+        if (message != NULL) {
             printf("Message : %s\n", message);
         }
 
         send(client_socket, "Message reçu\n", strlen("Message reçu\n"), 0);
+
+        // Après le premier message, mettre à jour le flag
+        is_first_message = 0;
     }
 
     printf("Client déconnecté\n");
