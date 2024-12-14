@@ -205,22 +205,22 @@ void handle_client(int client_socket)
 
         // Séparer le message en deux parties
         char *pseudo_envoyeur = strtok(buffer, " ");
-        char *pseudi_receveur = strtok(NULL, " ");
+        char *pseudo_receveur = strtok(NULL, " ");
         char *message = strtok(NULL, "\0");
 
         if (pseudo_envoyeur != NULL)
         {
-            printf("Premier mot : %s\n", pseudo_envoyeur);
+            printf("Pseudo envoyeur : %s\n", pseudo_envoyeur);
         }
 
-        if (pseudi_receveur != NULL)
+        if (pseudo_receveur != NULL)
         {
-            printf("Deuxième mot : %s\n", pseudi_receveur);
+            printf("Pseudo receveur : %s\n", pseudo_receveur);
         }
 
         if (message != NULL)
         {
-            printf("Suite du message : %s\n", message);
+            printf("Message : %s\n", message);
         }
 
         send(client_socket, "Message reçu\n", strlen("Message reçu\n"), 0);
