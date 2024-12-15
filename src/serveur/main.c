@@ -117,7 +117,7 @@ int initServeur(int port)
  * @param address l'adresse du client
  * @return int 0 si l'ajout a réussi, -1 sinon
  */
-int addClient(int socket_fd, struct sockaddr_in address)
+int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
 {
     if (pthread_mutex_lock(&clients_mutex) != 0)
     {
@@ -132,6 +132,8 @@ int addClient(int socket_fd, struct sockaddr_in address)
             clients[i].socket_fd = socket_fd;
             clients[i].address = address;
             clients[i].is_active = 1;
+            strncpy(clients[i].pseudo, pseudo, MAX_LEN_PSEUDO - 1);
+            clients[i].pseudo[MAX_LEN_PSEUDO - 1] = '\0';
             if (pthread_mutex_unlock(&clients_mutex) != 0)
             {
                 perror("pthread_mutex_unlock");
@@ -147,6 +149,18 @@ int addClient(int socket_fd, struct sockaddr_in address)
         perror("pthread_mutex_unlock");
         return -1;
     }
+}
+
+client_t *findClientByPseudo(const char *pseudo) {
+    pthread_mutex_lock(&clients_mutex);
+    for (int i = 0; i < MAX_CLIENTS; i++) {
+        if (clients[i].is_active && strcmp(clients[i].pseudo, pseudo) == 0) {
+            pthread_mutex_unlock(&clients_mutex);
+            return &clients[i];
+        }
+    }
+    pthread_mutex_unlock(&clients_mutex);
+    return NULL; // Aucun client trouvé
 }
 
 /**
@@ -198,43 +212,66 @@ void remove_client(int client_socket)
 void handle_client(int client_socket) {
     char buffer[MAX_LEN_MESSAGE];
     ssize_t bytes_read;
-    int is_first_message = 1;
 
+    // Récupérer le pseudonyme du client
+    bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+    if (bytes_read <= 0) {
+        printf("Erreur ou déconnexion du client lors de l'envoi du pseudonyme.\n");
+        remove_client(client_socket);
+        return;
+    }
+    buffer[bytes_read] = '\0'; // Null-terminate
+    char pseudo[MAX_LEN_PSEUDO];
+    strncpy(pseudo, buffer, MAX_LEN_PSEUDO - 1);
+    pseudo[MAX_LEN_PSEUDO - 1] = '\0';
+
+    // Ajouter le client avec son pseudonyme
+    struct sockaddr_in client_address;
+    socklen_t client_len = sizeof(client_address);
+    getpeername(client_socket, (struct sockaddr *)&client_address, &client_len);
+    if (addClient(client_socket, client_address, pseudo) == -1) {
+        printf("Impossible d'ajouter le client.\n");
+        close(client_socket);
+        return;
+    }
+
+    printf("Client connecté avec le pseudo : %s\n", pseudo);
+
+    // Boucle principale pour gérer les messages
     while ((bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0) {
-        buffer[bytes_read] = '\0'; // Null-terminate la chaîne reçue
-        printf("Message reçu du client : %s\n", buffer);
+        buffer[bytes_read] = '\0'; // Null-terminate
+        printf("Message reçu du client %s : %s\n", pseudo, buffer);
 
-        // Séparer le message en deux parties
+        // Extraire le pseudonyme du destinataire et le message
         char *pseudo_envoyeur = strtok(buffer, " ");
+        printf("pseudo_envoyeur : %s\n", pseudo_envoyeur);
+
         char *pseudo_receveur = strtok(NULL, " ");
+        printf("pseudo_receveur : %s\n", pseudo_receveur);
+
         char *message = strtok(NULL, "\0");
 
-        if (!is_first_message && (message == NULL || pseudo_envoyeur == NULL || pseudo_receveur == NULL)) {
-            send(client_socket, "Message invalide\n", strlen("Message invalide\n"), 0);
+        
+
+        // Trouver le client destinataire
+        client_t *destinataire = findClientByPseudo(pseudo_receveur);
+        if (destinataire == NULL) {
+            char error_msg[MAX_LEN_MESSAGE];
+            snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
+            send(client_socket, error_msg, strlen(error_msg), 0);
             continue;
         }
 
-        if (pseudo_envoyeur != NULL) {
-            printf("Pseudo envoyeur : %s\n", pseudo_envoyeur);
-        }
-
-        if (pseudo_receveur != NULL) {
-            printf("Pseudo receveur : %s\n", pseudo_receveur);
-        }
-
-        if (message != NULL) {
-            printf("Message : %s\n", message);
-        }
-
-        send(client_socket, "Message reçu\n", strlen("Message reçu\n"), 0);
-
-        // Après le premier message, mettre à jour le flag
-        is_first_message = 0;
+        // Envoyer le message au destinataire
+        char full_message[MAX_LEN_MESSAGE];
+        snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
+        send(destinataire->socket_fd, full_message, strlen(full_message), 0);
     }
 
-    printf("Client déconnecté\n");
+    printf("Client %s déconnecté\n", pseudo);
     remove_client(client_socket);
 }
+
 
 /**
  * @brief Fonction exécutée par les threads clients
@@ -275,7 +312,8 @@ void run_server(int server_socket)
             continue;
         }
 
-        if (addClient(client_socket, client_address) == -1)
+        char pseudo[MAX_LEN_PSEUDO] = "default_pseudo"; // Replace with actual pseudo logic
+        if (addClient(client_socket, client_address, pseudo) == -1)
         {
             fprintf(stderr, "Erreur lors de l'ajout du client\n");
             close(client_socket);
