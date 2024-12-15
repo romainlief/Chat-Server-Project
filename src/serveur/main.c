@@ -9,7 +9,7 @@
 #include <ctype.h>
 #include <arpa/inet.h>
 
-#define MAX_CLIENTS 2
+#define MAX_CLIENTS 3
 #define MAX_LEN_MESSAGE 1024
 #define PORT_PAR_DEFAULT 1234
 #define MAX_CONNEXIONS 1
@@ -292,6 +292,11 @@ void *client_thread(void *arg)
  *
  * @param server_socket le descripteur du socket du serveur
  */
+/**
+ * @brief Fonction principale du serveur
+ *
+ * @param server_socket le descripteur du socket du serveur
+ */
 void run_server(int server_socket)
 {
     while (1)
@@ -299,52 +304,45 @@ void run_server(int server_socket)
         struct sockaddr_in client_address;
         socklen_t client_len = sizeof(client_address);
 
-        if (count_active_clients() >= MAX_CLIENTS)
+        // Accepter une nouvelle connexion
+        int *new_client_socket = malloc(sizeof(int));
+        if (new_client_socket == NULL)
         {
-            sleep(1); // Attendre avant de réessayer
+            perror("malloc");
             continue;
         }
 
-        int client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_len);
-        if (client_socket < 0)
+        *new_client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_len);
+        if (*new_client_socket < 0)
         {
             perror("accept");
+            free(new_client_socket);
             continue;
         }
 
-        char pseudo[MAX_LEN_PSEUDO] = "default_pseudo"; // Replace with actual pseudo logic
-        if (addClient(client_socket, client_address, pseudo) == -1)
+        // Vérifier si le nombre de connexions atteint la limite
+        if (count_active_clients() >= MAX_CLIENTS)
         {
-            fprintf(stderr, "Erreur lors de l'ajout du client\n");
-            close(client_socket);
+            printf("Nombre maximal de clients atteint. Rejet de la connexion.\n");
+            close(*new_client_socket);
+            free(new_client_socket);
+            continue;
         }
 
-        printf("Nouveau client connecté : %s:%d\n",
-               inet_ntoa(client_address.sin_addr), ntohs(client_address.sin_port));
+        printf("Nouvelle connexion acceptée.\n");
 
         // Créer un thread pour gérer le client
         pthread_t thread_id;
-        int *socket_ptr = malloc(sizeof(int));
-        if (socket_ptr == NULL)
-        {
-            perror("malloc");
-            close(client_socket);
-            continue;
-        }
-        *socket_ptr = client_socket;
-
-        if (pthread_create(&thread_id, NULL, client_thread, socket_ptr) != 0)
+        if (pthread_create(&thread_id, NULL, client_thread, new_client_socket) != 0)
         {
             perror("pthread_create");
-            free(socket_ptr);
-            close(client_socket);
-            continue;
+            close(*new_client_socket);
+            free(new_client_socket);
         }
-
-        // Détacher le thread pour libérer les ressources automatiquement
-        pthread_detach(thread_id);
+        pthread_detach(thread_id); // Détacher le thread pour éviter les fuites de ressources
     }
 }
+
 
 int main(void)
 {
