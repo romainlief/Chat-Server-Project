@@ -62,6 +62,7 @@ void run_server(int server_socket)
         socklen_t client_len = sizeof(client_address);
 
         // Accepter une nouvelle connexion
+       
         int *new_client_socket = malloc(sizeof(int));
         if (new_client_socket == NULL)
         {
@@ -69,23 +70,30 @@ void run_server(int server_socket)
             continue;
         }
 
-        *new_client_socket = checked(accept(server_socket, (struct sockaddr *)&client_address, &client_len), "accept");
-        if (*new_client_socket < 0)
-        {
-            perror("accept");
-            free(new_client_socket);
-            continue;
-        }
-
+        int valide = 1;
         // Vérifier si le nombre de connexions atteint la limite
         if (count_active_clients() >= MAX_CLIENTS) {
-        sleep(1); // Attendre avant de réessayer
-        continue;
-    } 
+        // sleep(1); // Attendre avant de réessayer 
+        // continue;
+            valide = 0;
+
+        } 
+        
+        sleep(1);
+        if(valide){
+            
+            *new_client_socket = checked(accept(server_socket, (struct sockaddr *)&client_address, &client_len), "accept");
+            if (*new_client_socket < 0)
+            {
+                perror("accept");
+                free(new_client_socket);
+                continue;
+            }
+        }
+        
     
 
-
-        printf("Nouvelle connexion acceptée.\n");
+        // printf("Nouvelle connexion acceptée.\n");
 
         // Créer un thread pour gérer le client
         pthread_t thread_id;
