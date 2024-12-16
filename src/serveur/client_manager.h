@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 
 #include "constants.h"
+#include "error_handler.h"
 
 typedef struct
 {
@@ -20,14 +21,6 @@ typedef struct
     char pseudo[MAX_LEN_PSEUDO]; // Pseudonyme du client
 } client_t;
 
-/**
- * @brief Fonction de gestion des erreurs
- *
- * @param ret la valeur de retour de la fonction à vérifier
- * @param calling_function le nom de la fonction appelante
- * @return ret la valeur de retour de la fonction à vérifier
- */
-int checked(int ret, char *calling_function);
 
 /**
  * @brief Ajoute un client au tableau des clients

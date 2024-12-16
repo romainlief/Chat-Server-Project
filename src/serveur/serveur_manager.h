@@ -12,6 +12,7 @@
 
 #include "constants.h"
 #include "client_manager.h"
+#include "error_handler.h"
 
 /**
  * @brief Récupère le port du serveur depuis la variable d'environnement PORT_SERVEUR

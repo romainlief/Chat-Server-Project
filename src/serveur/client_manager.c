@@ -3,15 +3,6 @@
 extern pthread_mutex_t clients_mutex; // Mutex pour synchroniser l'accès au tableau des clients
 extern client_t clients[MAX_CLIENTS]; // Tableau des clients
 
-int checked(int ret, char *calling_function)
-{
-    if (ret < 0)
-    {
-        perror(calling_function);
-        exit(EXIT_FAILURE);
-    }
-    return ret;
-}
 
 int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
 {
