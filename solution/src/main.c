@@ -68,9 +68,10 @@ void * readerThread(void *arg){
       fflush(stdout);
       
 
-      return NULL;
+      
 
    }
+   return NULL;
 }
 
 void* writerThread(void *arg){
@@ -82,7 +83,7 @@ void* writerThread(void *arg){
    ssize_t code;
 
    pthread_t second_thread;
-   pthread_create(&second_thread, NULL, &readerThread, &socket);
+   pthread_create(&second_thread, NULL, &readerThread, &arg);
    pthread_join(second_thread, NULL);
 
    while((code = getline(&message, &size_mess, stdin)) > 0){
@@ -136,7 +137,6 @@ int main(int argc, char* argv[]) {
 
    if(checkPort() == 1){
       char * port_value_str = getenv(port_name);
-
       port = atoi(port_value_str);
    }
 
@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
    argument.socket = &sock;
    argument.options = options;
    strcpy(argument.utilisateur, argv[1]);
-
+   send(sock, argument.utilisateur, strlen(argument.utilisateur), 0);
 
    // THREADS
    pthread_t origin_thread;
