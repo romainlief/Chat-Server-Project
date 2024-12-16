@@ -51,8 +51,6 @@ int initServeur(int port)
     checked(bind(server_fd, (struct sockaddr *)&address, sizeof(address)), "bind"); // Liaison du socket à l'adresse et au port spécifiés
     checked(listen(server_fd, MAX_CONNEXIONS), "listen");                           // Mise en écoute du serveur
 
-    printf("Serveur démarré sur le port %d\n", port);
-
     return server_fd;
 }
 
