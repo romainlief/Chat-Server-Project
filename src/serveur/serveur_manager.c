@@ -9,7 +9,7 @@ int getServeurPort()
 
     if (port_env != NULL)
     {
-        for (int i = 0; port_env[i] != '\0'; i++)
+        for (int i = 0; port_env[i] != '\0'; i++) 
         {
             if (!isdigit(port_env[i]))
             {
@@ -19,13 +19,13 @@ int getServeurPort()
         }
 
         int env_port = atoi(port_env);
-        if (env_port > 0 && env_port <= 65535)
+        if (env_port >= BORNES_PORT_MIN && env_port <= BORNES_PORT_MAX)
         {
             port = env_port;
         }
         else
         {
-            fprintf(stderr, "Port hors plage (1-65535), utilisation du port par défaut (%d)\n", PORT_PAR_DEFAULT);
+            fprintf(stderr, "Port hors bornes (1-65535), utilisation du port par défaut (%d)\n", PORT_PAR_DEFAULT);
         }
     }
 
