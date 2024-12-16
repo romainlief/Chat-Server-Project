@@ -78,13 +78,12 @@ void run_server(int server_socket)
         }
 
         // Vérifier si le nombre de connexions atteint la limite
-        if (count_active_clients() >= MAX_CLIENTS)
-        {
-            printf("Nombre maximal de clients atteint. Rejet de la connexion.\n");
-            close(*new_client_socket);
-            free(new_client_socket);
-            continue;
-        }
+        if (count_active_clients() >= MAX_CLIENTS) {
+        sleep(1); // Attendre avant de réessayer
+        continue;
+    } 
+    
+
 
         printf("Nouvelle connexion acceptée.\n");
 
@@ -97,5 +96,6 @@ void run_server(int server_socket)
             free(new_client_socket);
         }
         pthread_detach(thread_id); // Détacher le thread pour éviter les fuites de ressources
+    
     }
 }
