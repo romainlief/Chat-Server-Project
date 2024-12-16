@@ -128,15 +128,10 @@ void handle_client(int client_socket)
     while ((bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0)
     {
         buffer[bytes_read] = '\0'; // Null-terminate
-        printf("Message reçu du client %s : %s\n", pseudo, buffer);
 
         // Extraire le pseudonyme du destinataire et le message
-        char *pseudo_envoyeur = strtok(buffer, " ");
-        printf("pseudo_envoyeur : %s\n", pseudo_envoyeur);
-
+        strtok(buffer, " ");
         char *pseudo_receveur = strtok(NULL, " ");
-        printf("pseudo_receveur : %s\n", pseudo_receveur);
-
         char *message = strtok(NULL, "\0");
 
         // Trouver le client destinataire
