@@ -71,7 +71,7 @@ void run_server(int server_socket)
             continue;
         }
 
-        *new_client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_len);
+        *new_client_socket = checked(accept(server_socket, (struct sockaddr *)&client_address, &client_len), "accept");
         if (*new_client_socket < 0)
         {
             perror("accept");

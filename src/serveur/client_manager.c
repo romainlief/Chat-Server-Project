@@ -6,11 +6,8 @@ extern client_t clients[MAX_CLIENTS]; // Tableau des clients
 
 int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
 {
-    if (pthread_mutex_lock(&clients_mutex) != 0)
-    {
-        perror("pthread_mutex_lock");
-        return -1;
-    }
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
+
 
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
@@ -21,43 +18,35 @@ int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
             clients[i].is_active = 1;
             strncpy(clients[i].pseudo, pseudo, MAX_LEN_PSEUDO - 1);
             clients[i].pseudo[MAX_LEN_PSEUDO - 1] = '\0';
-            if (pthread_mutex_unlock(&clients_mutex) != 0)
-            {
-                perror("pthread_mutex_unlock");
-                return -1;
-            }
+            checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
             return 0;
         }
     }
 
     // Déverrouillage du mutex si aucun emplacement libre n'a été trouvé
-    if (pthread_mutex_unlock(&clients_mutex) != 0)
-    {
-        perror("pthread_mutex_unlock");
-        return -1;
-    }
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
     return -1; // Aucun emplacement libre
 }
 
 client_t *findClientByPseudo(const char *pseudo)
 {
-    pthread_mutex_lock(&clients_mutex);
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if (clients[i].is_active && strcmp(clients[i].pseudo, pseudo) == 0)
         {
-            pthread_mutex_unlock(&clients_mutex);
+            checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
             return &clients[i];
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
     return NULL; // Aucun client trouvé
 }
 
 int count_active_clients()
 {
     int count = 0;
-    pthread_mutex_lock(&clients_mutex);
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if (clients[i].is_active)
@@ -65,23 +54,23 @@ int count_active_clients()
             count++;
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
     return count;
 }
 
 void remove_client(int client_socket)
 {
-    pthread_mutex_lock(&clients_mutex);
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if (clients[i].socket_fd == client_socket && clients[i].is_active)
         {
-            close(client_socket);
+            checked(close(client_socket), "close");
             clients[i].is_active = 0;
             break;
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
 }
 
 void handle_client(int client_socket)
