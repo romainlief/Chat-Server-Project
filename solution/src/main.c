@@ -48,6 +48,38 @@ int checkPort(){
 
    return( 0 < atoi(port) && atoi(port) <= 65535);
    }
+
+char* create_mem() {
+  char* mem = (char *)malloc(4096);
+  if (mem == NULL) {
+    perror("malloc()");
+    free(mem);
+    exit(1);
+  }
+  mem[0] = '\0';
+  return mem;
+}
+
+
+char* retStr(char* mem) {
+    if (mem == NULL || mem[0] == '\0') {
+        printf("Memory is empty\n");
+        return NULL;
+    }
+    return mem;
+}
+
+int addStr(char* mem, const char* str) {
+    size_t current_len = strlen(mem);
+    size_t str_len = strlen(str);
+
+    if (current_len + str_len + 1 >= 4096) {
+        printf("Memory is full\n");
+        return -1;
+    }
+    strcat(mem, str);
+    return 0;
+}
    
 
 void * readerThread(void *arg){
@@ -55,57 +87,45 @@ void * readerThread(void *arg){
    char* message = NULL;
    char buffer[256];
    int * socket = argv->socket;
-
+   char* memory;
+   if(argv->options.affichageManuel){
+      memory = create_mem();
+   }
    printf("test\n");
-   int i;
+   int code;
    while((read(*socket, buffer, sizeof(buffer))) > 0){
       
+      if(!argv->options.affichageManuel){
+         if (argv->options.modeBot) {
+            
+            printf("%s", buffer);
+         } else {
+            char * separators = "[]";
+            char* tok = strtok(buffer, separators);
+            printf("[\x1B[4m%s\x1B[0m]", tok);
+            tok = strtok(NULL, "");
+            printf("%s", tok);
+         }
 
-      if (argv->options.modeBot) {
-         // printf("[%s] %s", name2, buffer);
-      } else {
-         printf("%s", buffer);
       }
-
-
-      fflush(stdout);
+      // fflush(stdout);
       
-
-      
+      else{
+         code = addStr(memory, buffer);
+         if(code == -1){
+            retStr(memory);
+            code = addStr(memory, buffer);
+         }
+         
+      }
 
    }
    
    return NULL;
 }
 
-// void* writerThread(void *arg){
-//    Arguments * argv = (Arguments *) arg;
-   
-//    int *soket = argv->socket;
-//    char* message = NULL;
-//    size_t size_mess = 0;
-//    ssize_t code;
 
-//    pthread_t second_thread;
-//    pthread_create(&second_thread, NULL, &readerThread, &arg);
-   
 
-//    while((code = getline(&message, &size_mess, stdin)) > 0){
-//       // veroiller socket
-//       if (!argv->options.modeBot) {
-//          printf("[\x1B[4m%s\x1B[0m] %s", argv->utilisateur, message);
-//          fflush(stdout);
-//       }
-
-//       write(*soket, message, sizeof(message));
-//       // deverouiller socket
-//    }
-
-//    pthread_join(second_thread, NULL);
-
-   
-//    return NULL;
-// }
 
 
 
@@ -179,9 +199,18 @@ int main(int argc, char* argv[]) {
 
    pthread_t second_thread;
    pthread_create(&second_thread, NULL, &readerThread, &argument);
+   char* token ;
    
 
    while((code = getline(&message, &size_mess, stdin)) > 0){
+     char* verificateur = strdup(message);
+      token = strtok(verificateur, " ");
+      token = strtok(NULL, " ");
+      if(token == NULL || strcmp(token, "\n") == 0 ){
+         printf("nonvalide n\n");
+         continue;
+      }
+
       // veroiller socket
       if (!options.modeBot) {
          printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, message);
