@@ -9,15 +9,23 @@
 #include <unistd.h>
 
 #include "parametres.h"
-#include "signal.h"
+// #include "signal.h"
 // #include "mempartagee.h"
-#include "processus.h"
+#include <signal.h>
+
+
+#define BUFFER_SIZE 20
 
 typedef struct {
    int* socket;
    OptionsProgramme options;
    char utilisateur[30]; 
 } Arguments;
+
+typedef struct {
+  size_t taille;
+  char* valeurs;
+} liste_t;
 
 
 
@@ -49,17 +57,44 @@ int checkPort(){
    return( 0 < atoi(port) && atoi(port) <= 65535);
    }
 
-char* create_mem() {
-  char* mem = (char *)malloc(4096);
-  if (mem == NULL) {
+liste_t create_mem() {
+  liste_t ls = {0, NULL};
+  ls.valeurs = (char *)malloc(BUFFER_SIZE);
+  if (ls.valeurs == NULL) {
     perror("malloc()");
-    free(mem);
+    free(ls.valeurs);
     exit(1);
   }
-  mem[0] = '\0';
-  return mem;
+  return ls;
 }
 
+
+char* popStr(liste_t* ls) {
+  if (ls->taille == 0) {
+      printf("Memory is empty\n");
+      return NULL;
+  }
+
+  size_t idx = 0;
+  do {
+    idx++;
+  } while (ls->valeurs[idx] != '\0' && ls->taille >= idx);
+  
+  idx++; // to fit in '\0'
+  ls->taille -= idx;
+
+  char* retStr = (char *)malloc(idx + 1);
+  if (retStr == NULL) {
+    perror("malloc()");
+    free(retStr);
+    exit(1);
+  }
+  memcpy(retStr, ls->valeurs, idx); 
+  memmove(ls->valeurs, ls->valeurs + idx, ls->taille); // shifting values to the left
+
+  return retStr;
+
+}
 
 char* retStr(char* mem) {
     if (mem == NULL || mem[0] == '\0') {
@@ -69,25 +104,28 @@ char* retStr(char* mem) {
     return mem;
 }
 
-int addStr(char* mem, const char* str) {
-    size_t current_len = strlen(mem);
+
+int addStr(liste_t* ls, const char* str) {
     size_t str_len = strlen(str);
 
-    if (current_len + str_len + 1 >= 4096) {
+    if (ls->taille + str_len + 1 >= BUFFER_SIZE) {
         printf("Memory is full\n");
         return -1;
     }
-    strcat(mem, str);
+    
+    memcpy(ls->valeurs + ls->taille , str, str_len);
+    ls->taille += str_len;
+    ls->valeurs[ls->taille] = '\0';
+    ls->taille++;
     return 0;
 }
-   
 
 void * readerThread(void *arg){
    Arguments * argv = (Arguments *) arg;
-   char* message = NULL;
+   char* msg = NULL;
    char buffer[256];
    int * socket = argv->socket;
-   char* memory;
+   liste_t memory;
    if(argv->options.affichageManuel){
       memory = create_mem();
    }
@@ -111,14 +149,25 @@ void * readerThread(void *arg){
       // fflush(stdout);
       
       else{
-         code = addStr(memory, buffer);
+         code = addStr(&memory, buffer);
          if(code == -1){
-            retStr(memory);
-            code = addStr(memory, buffer);
+            msg = popStr(&memory);
+            while(msg != NULL){
+               printf("%s", msg);
+               free(msg);
+               msg = popStr(&memory);
+            }
+            code = addStr(&memory, buffer);
          }
          
       }
 
+   }
+   msg = popStr(&memory);
+   while(msg != NULL){
+      printf("%s", msg);
+      free(msg);
+      msg = popStr(&memory);
    }
    
    return NULL;
@@ -132,6 +181,7 @@ void * readerThread(void *arg){
 
 int main(int argc, char* argv[]) {
 
+
    const char * port_name = "PORT_SERVEUR";
    const char * port_value = "1234";
    setenv(port_name, port_value, 1);
@@ -142,18 +192,10 @@ int main(int argc, char* argv[]) {
 
 
 
-   MessageSuspendu* messageSuspendu;
+
    OptionsProgramme options;
-
    GererParameteres(argc, argv, &options);
-   MiseEnPlaceGestionnairesSignaux();
 
-   messageSuspendu = CreerMessageSuspendu();
-   if (VerifierSigintEnAttente()) {
-      return CODE_RETOUR_ARRET_SIGINT;
-   } else if (messageSuspendu == NULL) {
-      return CODE_RETOUR_ERREUR_AUTRE;
-   }
 
    int port = 1234;  // valeur defaut
    char ip[] = "127.0.0.1";   // valeur defaut
@@ -185,7 +227,6 @@ int main(int argc, char* argv[]) {
       perror("SOCKET NON FAIT");
       exit(1);
    }
-   
 
    Arguments argument;
    argument.socket = &sock;
@@ -202,8 +243,8 @@ int main(int argc, char* argv[]) {
    char* token ;
    
 
-   while((code = getline(&message, &size_mess, stdin)) > 0){
-     char* verificateur = strdup(message);
+   while((code = getline(&message, &size_mess, stdin))>0){
+      char* verificateur = strdup(message);
       token = strtok(verificateur, " ");
       token = strtok(NULL, " ");
       if(token == NULL || strcmp(token, "\n") == 0 ){
@@ -231,8 +272,8 @@ int main(int argc, char* argv[]) {
    // pthread_join(origin_thread, NULL);
 
 
-   LibererMessageSuspendu(messageSuspendu);
-
+   // LibererMessageSuspendu(messageSuspendu);
+   close(sock);
    return 0;
 }
 
