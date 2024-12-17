@@ -54,14 +54,18 @@ void * readerThread(void *arg){
    Arguments * argv = (Arguments *) arg;
    char* message = NULL;
    char buffer[256];
+   int * socket = argv->socket;
 
-   while(read(*argv->socket, buffer, sizeof(buffer)) > 0){
-      char * name = strtok(buffer, " ");
-      char * message = strtok(NULL, "");
+   printf("test\n");
+   int i;
+   while((read(*socket, buffer, sizeof(buffer))) > 0){
+      
+      // char * name = strtok(buffer, " ");
+      // char * message = strtok(NULL, "");
       if (argv->options.modeBot) {
-         printf("[%s] %s", name, buffer);
+         // printf("[%s] %s", name, buffer);
       } else {
-         printf("[\x1B[4m%s\x1B[0m] %s", name, buffer);
+         printf(buffer);
       }
 
 
@@ -71,6 +75,7 @@ void * readerThread(void *arg){
       
 
    }
+   
    return NULL;
 }
 
