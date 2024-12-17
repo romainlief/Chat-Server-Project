@@ -59,23 +59,43 @@
 \paragraph{Dans le cadre de notre cours d'OS, nous avons réalisé un projet qui consiste à implémenter unz messagerie en ligne comprenant un serveur en C.
 Ce chat, permet la communication entre deux clients via des sockets en ligne et sur des ordinateurs différents. La messagerie est composé de deux parties, celle décrite ci-dessus et une autre écrite en bash,
 faisant office de chat-auto permettant la facilitation de l'utilisation du programme chat. Ce chat-auto est conçu pour simuler un client en automatisant les taches d'envoies de messages à l'interlocuteur.\\
-Le projet se compose donc de deux parties : le programme de chat (chat) et le script Bash (chat-bot).}
+Le projet se compose donc de deux parties : le programme de messagerie avec (client) et (server) et le script Bash (chat-auto).}
 
 \subsection{Objectifs du projet}
-\paragraph{}
+\paragraph{L'objectif de ce projet est de mettre en pratique les concepts vus en cours d'OS, notamment les sockets, les threads, la gestion
+des signaux, les mutexs,et le bash. 
+Ce rapport décrit les choix d'implémentation, les difficultés rencontrées et les solutions mises en œuvre utilisée dans la 
+construction de ce projet.}
 
 \section{Choix d’Implémentation}
 \subsection{Choix du langage}
+\paragraph{Dans le cadre de ce projet, nous avions le choix entre le C et le C++ comme langage de programmation.
+Nous avons fait le choix d'utiliser du C car c'est en C que nous avons vu la matère durant les séances de travaux 
+pratiques et que la solution du premier projet a été faites en C. 
+De plus, ayant fait le premier projet en C, il aurait été plus compliqué de faire le deuxième en C++ car il aurait 
+fallu faire des recherches supplémentaires pour comprendre les différences entre les deux langages.}
 
-
-
-
-\section{Conclusion}
+\subsection{Choix de la méthode de gestion des clients}
 \paragraph{}
 
+\subsection{Gestion des accès concurrents}
+\paragraph{}
 
+\subsection{Gestion des signaux}
+\paragraph{}
 
+\section{Difficultés Rencontrées et Solutions}
+\paragraph{}
 
+\section{Solutions Originales et Améliorations}
+\paragraph{}
+
+\section{Conclusion}
+\paragraph{Ce projet nous a permis de mettre en pratique et de se familiariser avec les concepts vus en cours d'OS,
+tels que les sockets, les signaux, les threads, et les mutex en C et de pratiquer le bash.
+Celui-ci, nous a appris à utiliser les outils de programmation en C comme sigaction, les fonctions relatives aux sockets telles que listen, bind,... .
+Ce projet nous a également permis de travailler à nouveau avec le même groupe que pour le premier projet, ce qui nous a permis de nous 
+améliorer avec ce même groupe, impliquant une évolution dans la gestion et répartition du travail.}
 
 
 
