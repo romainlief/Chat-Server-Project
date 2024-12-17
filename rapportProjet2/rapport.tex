@@ -84,7 +84,7 @@ Nous avons choisi cette méthode car ceux-ci présentent plusieurs avantages :}
     \item \textbf{Concurrence et Réactivité :} L'utilisation des threads permet de traiter les requêtes des clients de manière concurrente. Chaque client est géré indépendamment, ce qui améliore la réactivité du serveur. Si un client envoie seulement des messages de manière sporadique, cela n'affecte pas les autres clients.
     \item \textbf{Simplicité de l'implémentation :} Les threads sont relativement simples à utiliser (pthread).
     \item \textbf{Utilisation efficace des ressources :} Les threads partagent le même espace mémoire, ce qui permet une communication rapide et efficace entre eux. Les processus quant a eux n'auraient pas été une solution légère en mémoire pour gérer les clients.
-    \item \textbf{Scalabilité :} Avec les threads, le serveur peut facilement gérer un grand nombre de clients simultanément. Chaque nouveau client est simplement un nouveau thread, ce qui permet une gestion dynamique des connexions.
+    \item \textbf{Gestion à grande échelle :} Avec les threads, le serveur peut facilement gérer un grand nombre de clients simultanément. Chaque nouveau client est simplement un nouveau thread, ce qui permet une gestion dynamique des connexions.
 \end{itemize}
 
 \paragraph{Alternatives considérées :}
