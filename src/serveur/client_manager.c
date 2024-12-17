@@ -110,6 +110,7 @@ void handle_client(int client_socket)
         buffer[bytes_read] = '\0'; // Null-terminate
 
         // Extraire le pseudonyme du destinataire et le message
+        
         char *pseudo_receveur = strtok(buffer, " ");
         char *message = strtok(NULL, "\0");
         printf("Message envoyé de %s à %s : %s\n", pseudo, pseudo_receveur, message);

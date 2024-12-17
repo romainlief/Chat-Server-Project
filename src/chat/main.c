@@ -11,6 +11,8 @@
 #define MAX_PSEUDO_LEN 30
 #define MAX_MSG_LEN 1024
 
+
+
 int sockfd;
 char pseudo[MAX_PSEUDO_LEN];
 volatile int running = 1;
@@ -45,7 +47,7 @@ void *receive_messages(void *arg) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    if (argc < 2) {
         fprintf(stderr, "Usage : ./chat PSEUDO\n");
         return 1;
     }

@@ -10,7 +10,7 @@
 
 #include "parametres.h"
 #include "signal.h"
-#include "mempartagee.h"
+// #include "mempartagee.h"
 #include "processus.h"
 
 typedef struct {
@@ -60,12 +60,11 @@ void * readerThread(void *arg){
    int i;
    while((read(*socket, buffer, sizeof(buffer))) > 0){
       
-      // char * name = strtok(buffer, " ");
-      // char * message = strtok(NULL, "");
+
       if (argv->options.modeBot) {
-         // printf("[%s] %s", name, buffer);
+         // printf("[%s] %s", name2, buffer);
       } else {
-         printf(buffer);
+         printf("%s", buffer);
       }
 
 
@@ -79,32 +78,34 @@ void * readerThread(void *arg){
    return NULL;
 }
 
-void* writerThread(void *arg){
-   Arguments * argv = (Arguments *) arg;
+// void* writerThread(void *arg){
+//    Arguments * argv = (Arguments *) arg;
    
-   int *soket = argv->socket;
-   char* message = NULL;
-   size_t size_mess = 0;
-   ssize_t code;
+//    int *soket = argv->socket;
+//    char* message = NULL;
+//    size_t size_mess = 0;
+//    ssize_t code;
 
-   pthread_t second_thread;
-   pthread_create(&second_thread, NULL, &readerThread, &arg);
-   pthread_join(second_thread, NULL);
+//    pthread_t second_thread;
+//    pthread_create(&second_thread, NULL, &readerThread, &arg);
+   
 
-   while((code = getline(&message, &size_mess, stdin)) > 0){
-      // veroiller socket
-      if (!argv->options.modeBot) {
-         printf("[\x1B[4m%s\x1B[0m] %s", argv->utilisateur, message);
-         fflush(stdout);
-      }
+//    while((code = getline(&message, &size_mess, stdin)) > 0){
+//       // veroiller socket
+//       if (!argv->options.modeBot) {
+//          printf("[\x1B[4m%s\x1B[0m] %s", argv->utilisateur, message);
+//          fflush(stdout);
+//       }
 
-      write(*soket, message, sizeof(message));
-      // deverouiller socket
-   }
+//       write(*soket, message, sizeof(message));
+//       // deverouiller socket
+//    }
+
+//    pthread_join(second_thread, NULL);
 
    
-   return NULL;
-}
+//    return NULL;
+// }
 
 
 
@@ -172,12 +173,33 @@ int main(int argc, char* argv[]) {
    strcpy(argument.utilisateur, argv[1]);
    send(sock, argument.utilisateur, strlen(argument.utilisateur), 0);
 
-   // THREADS
-   pthread_t origin_thread;
-   
-   pthread_create(&origin_thread, NULL, &writerThread, &argument);
+   char* message = NULL;
+   size_t size_mess = 0;
+   ssize_t code;
 
-   pthread_join(origin_thread, NULL);
+   pthread_t second_thread;
+   pthread_create(&second_thread, NULL, &readerThread, &argument);
+   
+
+   while((code = getline(&message, &size_mess, stdin)) > 0){
+      // veroiller socket
+      if (!options.modeBot) {
+         printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, message);
+         fflush(stdout);
+      }
+
+      write(sock, message, sizeof(message));
+      // deverouiller socket
+   }
+
+   pthread_join(second_thread, NULL);
+
+   // THREADS
+   // pthread_t origin_thread;
+   
+   // pthread_create(&origin_thread, NULL, &writerThread, &argument);
+
+   // pthread_join(origin_thread, NULL);
 
 
    LibererMessageSuspendu(messageSuspendu);
