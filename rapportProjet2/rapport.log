@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  4 DEC 2024 19:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  17 DEC 2024 14:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**/Users/romainliefferinckx/C:CppProjects/OS-Projet2/rapport/rapport.tex
-(/Users/romainliefferinckx/C:CppProjects/OS-Projet2/rapport/rapport.tex
+**/Users/romainliefferinckx/C:CppProjects/OS-Projet2/rapportProjet2/rapport.tex
+(/Users/romainliefferinckx/C:CppProjects/OS-Projet2/rapportProjet2/rapport.tex
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
@@ -316,14 +316,22 @@ Package hyperref Info: Link coloring OFF on input line 20.
 \@outlinefile=\write3
 \openout3 = `rapport.out'.
 
-<logo.png, id=4, 1204.5pt x 1204.5pt>
+<logo.png, id=28, 1204.5pt x 1204.5pt>
 File: logo.png Graphic file (type png)
 <use logo.png>
 Package pdftex.def Info: logo.png  used on input line 36.
 (pdftex.def)             Requested size: 240.89574pt x 240.89574pt.
  [1
 
-{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./logo.png>] (./rapport.toc)
+{/usr/local/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map} <./logo.png>] (./rapport.toc
+LaTeX Font Info:    Trying to load font information for U+msa on input line 2.
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 2.
+ (/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+))
 \tf@toc=\write4
 \openout4 = `rapport.toc'.
 
@@ -332,27 +340,27 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
 <to be read again> 
                    \relax 
 l.52 \newpage
-              [1] (./rapport.aux)
+              [1] [2] (./rapport.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 Package rerunfilecheck Info: File `rapport.out' has not changed.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+(rerunfilecheck)             Checksum: 0803538142FB5FB8E2D555B4F6163D62;901.
  ) 
 Here is how much of TeX's memory you used:
- 11203 strings out of 474116
- 170732 string characters out of 5743682
- 1928187 words of memory out of 5000000
- 33441 multiletter control sequences out of 15000+600000
- 559578 words of font info for 41 fonts, out of 8000000 for 9000
+ 11260 strings out of 474116
+ 171572 string characters out of 5743682
+ 1929187 words of memory out of 5000000
+ 33474 multiletter control sequences out of 15000+600000
+ 561892 words of font info for 51 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 63i,7n,67p,559b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb>
-Output written on rapport.pdf (2 pages, 216032 bytes).
+ 63i,7n,67p,855b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb>
+Output written on rapport.pdf (3 pages, 244878 bytes).
 PDF statistics:
- 35 PDF objects out of 1000 (max. 8388607)
- 22 compressed objects within 1 object stream
- 3 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 81 PDF objects out of 1000 (max. 8388607)
+ 65 compressed objects within 1 object stream
+ 13 named destinations out of 1000 (max. 500000)
+ 54 words of extra memory for PDF output out of 10000 (max. 10000000)
 

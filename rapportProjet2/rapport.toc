@@ -1,0 +1,9 @@
+\contentsline {section}{\numberline {1}Introduction}{2}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Présentation du projet et contexte}{2}{subsection.1.1}%
+\contentsline {paragraph}{Dans le cadre de notre cours d'OS, nous avons réalisé un projet qui consiste à implémenter unz messagerie en ligne comprenant un serveur en C. Ce chat, permet la communication entre deux clients via des sockets en ligne et sur des ordinateurs différents. La messagerie est composé de deux parties, celle décrite ci-dessus et une autre écrite en bash, faisant office de chat-auto permettant la facilitation de l'utilisation du programme chat. Ce chat-auto est conçu pour simuler un client en automatisant les taches d'envoies de messages à l'interlocuteur.\\ Le projet se compose donc de deux parties : le programme de chat (chat) et le script Bash (chat-bot).}{2}{section*.2}%
+\contentsline {subsection}{\numberline {1.2}Objectifs du projet}{2}{subsection.1.2}%
+\contentsline {paragraph}{}{2}{section*.3}%
+\contentsline {section}{\numberline {2}Choix d’Implémentation}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Choix du langage}{2}{subsection.2.1}%
+\contentsline {section}{\numberline {3}Conclusion}{2}{section.3}%
+\contentsline {paragraph}{}{2}{section*.4}%
