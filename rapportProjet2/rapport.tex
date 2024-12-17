@@ -93,10 +93,19 @@ Nous avons choisi cette méthode car ceux-ci présentent plusieurs avantages :}
     \item \textbf{Multiplexing/Polling (select, poll, epoll) :} Une autre méthode aurait été d'utiliser des techniques de polling comme \texttt{select}, \texttt{poll} ou \texttt{epoll}. Bien que ces techniques soient certainement efficaces pour gérer de nombreuses connexions simultanées sans bloquer, elles sont plus complexes à implémenter et n'ayant pas beaucoup de temps pour ce projet ainsi que des connaissance restreinte sur le sujet, nous ne nous sommes pas risqué a les utiliser.
 \end{itemize}
 
-\paragraph{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, efficace et facile à maintenir, capable de gérer plusieurs clients simultanément sans être trop compliqué a gérer.}
+\paragraph{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, 
+efficace et facile à maintenir, capable de gérer plusieurs clients simultanément sans être trop 
+compliqué a gérer.}
 
 \subsection{Gestion des accès concurrents}
-\paragraph{}
+\paragraph{Pour que notre messagerie fonctionne correctement, la gestion des accès concurrents était un défi cruciale à réaliser pour assurer 
+l'intégrité des données partagées entre les différents threads. Nous avons donc utilisé des mutex pour 
+synchroniser l'accès aux ressources partagées, telles que la liste des clients connectés. Voici quelques exemples ou nous les avons utilisé :}
+\begin{itemize}
+    \item \textbf{Protection de la liste des clients :} La liste des clients connectés est une ressource partagée entre les différents threads. Pour éviter les conditions de course et garantir la sécurité des données, nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter ou de supprimer un client de la liste, le thread doit verrouiller ce mutex. Une fois les opérations terminée, le mutex est déverrouillé.
+    \item \textbf{Fonctions critiques :} Les fonctions qui modifient la liste des clients, telles que \texttt{addClient} et \texttt{remove\_client}, sont protégées par des mutex. Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits et les incohérences.
+    \item \textbf{Comptage des clients actifs :} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
+\end{itemize}
 
 \subsection{Gestion des signaux}
 \paragraph{}
