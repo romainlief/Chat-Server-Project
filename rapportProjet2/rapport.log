@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  17 DEC 2024 14:56
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  17 DEC 2024 15:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -340,7 +340,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
 <to be read again> 
                    \relax 
 l.52 \newpage
-              [1] [2] [3] (./rapport.aux)
+              [1] [2{/usr/local/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [3] (./rapport.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
@@ -349,18 +349,18 @@ Package rerunfilecheck Info: File `rapport.out' has not changed.
 (rerunfilecheck)             Checksum: D04F3D20627391BC4F3D88B253772611;2044.
  ) 
 Here is how much of TeX's memory you used:
- 11279 strings out of 474116
- 171785 string characters out of 5743682
- 1935187 words of memory out of 5000000
- 33481 multiletter control sequences out of 15000+600000
- 561892 words of font info for 51 fonts, out of 8000000 for 9000
+ 11291 strings out of 474116
+ 171965 string characters out of 5743682
+ 1937187 words of memory out of 5000000
+ 33488 multiletter control sequences out of 15000+600000
+ 562395 words of font info for 53 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 63i,7n,67p,881b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb>
-Output written on rapport.pdf (4 pages, 251807 bytes).
+ 63i,7n,67p,881b,502s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on rapport.pdf (4 pages, 275016 bytes).
 PDF statistics:
- 119 PDF objects out of 1000 (max. 8388607)
- 101 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
+ 132 PDF objects out of 1000 (max. 8388607)
+ 110 compressed objects within 2 object streams
+ 27 named destinations out of 1000 (max. 500000)
  94 words of extra memory for PDF output out of 10000 (max. 10000000)
 

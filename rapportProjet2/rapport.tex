@@ -76,7 +76,24 @@ De plus, ayant fait le premier projet en C, il aurait été plus compliqué de f
 fallu faire des recherches supplémentaires pour comprendre les différences entre les deux langages.}
 
 \subsection{Choix de la méthode de gestion des clients}
-\paragraph{}
+\paragraph{Dans le cadre de ce projet, nous avons fait le choix de gérer les clients via des threads. Chaques clients est géré par un thread différent.
+Cela permet de gérer plusieurs clients en même temps et de ne pas bloquer le serveur lorsqu'un client envoie un message.
+C'est la fonction handle\_client qui est exécutée dans un thread différent pour chaque client.
+Nous avons choisi cette méthode car ceux-ci présentent plusieurs avantages :}
+\begin{itemize}
+    \item \textbf{Concurrence et Réactivité :} L'utilisation des threads permet de traiter les requêtes des clients de manière concurrente. Chaque client est géré indépendamment, ce qui améliore la réactivité du serveur. Si un client envoie seulement des messages de manière sporadique, cela n'affecte pas les autres clients.
+    \item \textbf{Simplicité de l'implémentation :} Les threads sont relativement simples à utiliser (pthread).
+    \item \textbf{Utilisation efficace des ressources :} Les threads partagent le même espace mémoire, ce qui permet une communication rapide et efficace entre eux. Les processus quant a eux n'auraient pas été une solution légère en mémoire pour gérer les clients.
+    \item \textbf{Scalabilité :} Avec les threads, le serveur peut facilement gérer un grand nombre de clients simultanément. Chaque nouveau client est simplement un nouveau thread, ce qui permet une gestion dynamique des connexions.
+\end{itemize}
+
+\paragraph{Alternatives considérées :}
+\begin{itemize}
+    \item \textbf{Multiprocessing :} Utiliser des processus multiples pour chaque client aurait été une alternative. Cependant, cette méthode consomme plus de ressources car chaque processus a son propre espace mémoire. La communication entre processus est également plus complexe et moins efficace que la communication entre threads.
+    \item \textbf{Multiplexing/Polling (select, poll, epoll) :} Une autre méthode aurait été d'utiliser des techniques de polling comme \texttt{select}, \texttt{poll} ou \texttt{epoll}. Bien que ces techniques soient certainement efficaces pour gérer de nombreuses connexions simultanées sans bloquer, elles sont plus complexes à implémenter et n'ayant pas beaucoup de temps pour ce projet ainsi que des connaissance restreinte sur le sujet, nous ne nous sommes pas risqué a les utiliser.
+\end{itemize}
+
+\paragraph{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, efficace et facile à maintenir, capable de gérer plusieurs clients simultanément sans être trop compliqué a gérer.}
 
 \subsection{Gestion des accès concurrents}
 \paragraph{}

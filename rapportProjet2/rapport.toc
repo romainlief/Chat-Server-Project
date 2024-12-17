@@ -7,14 +7,16 @@
 \contentsline {subsection}{\numberline {2.1}Choix du langage}{2}{subsection.2.1}%
 \contentsline {paragraph}{Dans le cadre de ce projet, nous avions le choix entre le C et le C++ comme langage de programmation. Nous avons fait le choix d'utiliser du C car c'est en C que nous avons vu la matère durant les séances de travaux pratiques et que la solution du premier projet a été faites en C. De plus, ayant fait le premier projet en C, il aurait été plus compliqué de faire le deuxième en C++ car il aurait fallu faire des recherches supplémentaires pour comprendre les différences entre les deux langages.}{2}{section*.4}%
 \contentsline {subsection}{\numberline {2.2}Choix de la méthode de gestion des clients}{2}{subsection.2.2}%
-\contentsline {paragraph}{}{2}{section*.5}%
-\contentsline {subsection}{\numberline {2.3}Gestion des accès concurrents}{2}{subsection.2.3}%
-\contentsline {paragraph}{}{2}{section*.6}%
-\contentsline {subsection}{\numberline {2.4}Gestion des signaux}{2}{subsection.2.4}%
-\contentsline {paragraph}{}{2}{section*.7}%
-\contentsline {section}{\numberline {3}Difficultés Rencontrées et Solutions}{2}{section.3}%
-\contentsline {paragraph}{}{2}{section*.8}%
-\contentsline {section}{\numberline {4}Solutions Originales et Améliorations}{2}{section.4}%
-\contentsline {paragraph}{}{2}{section*.9}%
+\contentsline {paragraph}{Dans le cadre de ce projet, nous avons fait le choix de gérer les clients via des threads. Chaques clients est géré par un thread différent. Cela permet de gérer plusieurs clients en même temps et de ne pas bloquer le serveur lorsqu'un client envoie un message. C'est la fonction handle\_client qui est exécutée dans un thread différent pour chaque client. Nous avons choisi cette méthode car ceux-ci présentent plusieurs avantages :}{2}{section*.5}%
+\contentsline {paragraph}{Alternatives considérées :}{3}{section*.6}%
+\contentsline {paragraph}{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, efficace et facile à maintenir, capable de gérer plusieurs clients simultanément sans être trop compliqué a gérer.}{3}{section*.7}%
+\contentsline {subsection}{\numberline {2.3}Gestion des accès concurrents}{3}{subsection.2.3}%
+\contentsline {paragraph}{}{3}{section*.8}%
+\contentsline {subsection}{\numberline {2.4}Gestion des signaux}{3}{subsection.2.4}%
+\contentsline {paragraph}{}{3}{section*.9}%
+\contentsline {section}{\numberline {3}Difficultés Rencontrées et Solutions}{3}{section.3}%
+\contentsline {paragraph}{}{3}{section*.10}%
+\contentsline {section}{\numberline {4}Solutions Originales et Améliorations}{3}{section.4}%
+\contentsline {paragraph}{}{3}{section*.11}%
 \contentsline {section}{\numberline {5}Conclusion}{3}{section.5}%
-\contentsline {paragraph}{Ce projet nous a permis de mettre en pratique et de se familiariser avec les concepts vus en cours d'OS, tels que les sockets, les signaux, les threads, et les mutex en C et de pratiquer le bash. Celui-ci, nous a appris à utiliser les outils de programmation en C comme sigaction, les fonctions relatives aux sockets telles que listen, bind,... . Ce projet nous a également permis de travailler à nouveau avec le même groupe que pour le premier projet, ce qui nous a permis de nous améliorer avec ce même groupe, impliquant une évolution dans la gestion et répartition du travail.}{3}{section*.10}%
+\contentsline {paragraph}{Ce projet nous a permis de mettre en pratique et de se familiariser avec les concepts vus en cours d'OS, tels que les sockets, les signaux, les threads, et les mutex en C et de pratiquer le bash. Celui-ci, nous a appris à utiliser les outils de programmation en C comme sigaction, les fonctions relatives aux sockets telles que listen, bind,... . Ce projet nous a également permis de travailler à nouveau avec le même groupe que pour le premier projet, ce qui nous a permis de nous améliorer avec ce même groupe, impliquant une évolution dans la gestion et répartition du travail.}{3}{section*.12}%
