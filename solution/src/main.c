@@ -179,6 +179,10 @@ void * readerThread(void *arg){
 
 
 
+void ext(int sig){
+   exit(4);
+}
+
 
 
 
@@ -186,6 +190,7 @@ void * readerThread(void *arg){
 int main(int argc, char* argv[]) {
 
 
+   signal(SIGINT, ext); // exit 4 si SIGINT
    const char * port_name = "PORT_SERVEUR";
    const char * port_value = "1234";
    setenv(port_name, port_value, 1);
@@ -193,7 +198,6 @@ int main(int argc, char* argv[]) {
    const char * IP_name = "IP_SERVEUR";
    const char * IP_value = "127.0.0.1";
    setenv(IP_name, IP_value, 1);
-
 
 
 
@@ -226,11 +230,22 @@ int main(int argc, char* argv[]) {
       inet_pton(AF_INET, ip, &serv_addr.sin_addr);
    }
 
-
+   
    if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1){
       perror("SOCKET NON FAIT");
       exit(1);
    }
+   
+   // signal(SIGINT, emptyMemory);
+   
+   if(!options.affichageManuel){   //igniore signint
+      sigset_t set;
+      sigemptyset(&set);
+      sigaddset(&set, SIGINT);
+      pthread_sigmask(SIG_BLOCK, &set, NULL);
+   }
+
+   
 
    Arguments argument;
    liste_t memoire;
@@ -259,13 +274,19 @@ int main(int argc, char* argv[]) {
          if(code == -1){
             break;
          }
-         printf("nonvalide n\n");
+         printf("nonvalide\n");
          continue;
       }
 
       char temp[size_mess];
       memcpy(temp, message, size_mess);
-      // veroiller socket
+
+      
+
+      if (!options.modeBot) {
+         printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
+         fflush(stdout);
+      }
 
       if(options.affichageManuel){
          char* msg = popStr(&memoire);
@@ -275,23 +296,15 @@ int main(int argc, char* argv[]) {
             msg = popStr(&memoire);
          }
       }
-
-      if (!options.modeBot) {
-         printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
-         fflush(stdout);
-      }
-
+      
       write(sock, temp, sizeof(temp));
-      // deverouiller socket
-      if(options.affichageManuel){
-         printf("ici");
-      }
    }
    
    
      
    // LibererMessageSuspendu(messageSuspendu);
    close(sock);
+   
    pthread_join(second_thread, NULL);  
    return 0;
 }
