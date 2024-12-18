@@ -17,6 +17,8 @@
 
 #define BUFFER_SIZE 20
 
+
+
 typedef struct {
   size_t taille;
   char* valeurs;
@@ -28,6 +30,10 @@ typedef struct {
    char utilisateur[30]; 
    liste_t* memoir;
 } Arguments;
+
+
+
+liste_t memoire;
 
 
 
@@ -183,14 +189,27 @@ void ext(int sig){
    exit(4);
 }
 
+void set_vider(int sig){
+   char* msg = popStr(&memoire);
+   while(msg != NULL){
+      printf("%s", msg);
+      free(msg);
+      msg = popStr(&memoire);
+   }
+}
+
 
 
 
 
 int main(int argc, char* argv[]) {
+   OptionsProgramme options;
+   GererParameteres(argc, argv, &options);
 
-
+   
    signal(SIGINT, ext); // exit 4 si SIGINT
+   
+
    const char * port_name = "PORT_SERVEUR";
    const char * port_value = "1234";
    setenv(port_name, port_value, 1);
@@ -201,8 +220,6 @@ int main(int argc, char* argv[]) {
 
 
 
-   OptionsProgramme options;
-   GererParameteres(argc, argv, &options);
 
 
    int port = 1234;  // valeur defaut
@@ -244,11 +261,13 @@ int main(int argc, char* argv[]) {
       sigaddset(&set, SIGINT);
       pthread_sigmask(SIG_BLOCK, &set, NULL);
    }
-
+   else{
+      signal(SIGINT, set_vider);
+   }
    
 
    Arguments argument;
-   liste_t memoire;
+   // liste_t memoire;
    argument.socket = &sock;
    argument.options = options;
    argument.memoir = &memoire;
