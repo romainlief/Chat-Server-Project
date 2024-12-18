@@ -112,8 +112,20 @@ void handle_client(int client_socket)
         // Extraire le pseudonyme du destinataire et le message
         
         char *pseudo_receveur = strtok(buffer, " ");
+        if (pseudo_receveur == NULL)
+        {
+            printf("Message invalide reçu de %s\n", pseudo);
+            continue;
+        }
         char *message = strtok(NULL, "\0");
+        if (message == NULL)
+        {
+            printf("Message invalide reçu de %s\n", pseudo);
+            continue;
+        }
         printf("Message envoyé de %s à %s : %s\n", pseudo, pseudo_receveur, message);
+        printf("taille du message : %d\n", strlen(message));
+        printf("message : %s\n", message);
 
         // Trouver le client destinataire
         client_t *destinataire = findClientByPseudo(pseudo_receveur);
@@ -128,6 +140,7 @@ void handle_client(int client_socket)
         // Envoyer le message au destinataire
         char full_message[MAX_LEN_MESSAGE];
         snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
+        printf("taille du message : %d\n", strlen(full_message));
         send(destinataire->socket_fd, full_message, strlen(full_message), 0);
         
     }
