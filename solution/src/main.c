@@ -18,15 +18,16 @@
 #define BUFFER_SIZE 20
 
 typedef struct {
-   int* socket;
-   OptionsProgramme options;
-   char utilisateur[30]; 
-} Arguments;
-
-typedef struct {
   size_t taille;
   char* valeurs;
 } liste_t;
+
+typedef struct {
+   int* socket;
+   OptionsProgramme options;
+   char utilisateur[30]; 
+   liste_t* memoir;
+} Arguments;
 
 
 
@@ -126,9 +127,9 @@ void * readerThread(void *arg){
    char* msg = NULL;
    char buffer[1024];
    int * socket = argv->socket;
-   liste_t memory;
+   liste_t* memory = argv->memoir;
    if(argv->options.affichageManuel){
-      memory = create_mem();
+      *memory = create_mem();
    }
    printf("test\n");
    int code;
@@ -150,27 +151,27 @@ void * readerThread(void *arg){
       
       
       else{
-         code = addStr(&memory, buffer);
+         code = addStr(memory, buffer);
          printf("\a");
          fflush(stdout);
          if(code == -1){
-            msg = popStr(&memory);
+            msg = popStr(memory);
             while(msg != NULL){
                printf("%s", msg);
                free(msg);
-               msg = popStr(&memory);
+               msg = popStr(memory);
             }
-            code = addStr(&memory, buffer);
+            code = addStr(memory, buffer);
          }
          
       }
 
    }
-   msg = popStr(&memory);
+   msg = popStr(memory);
    while(msg != NULL){
       printf("%s", msg);
       free(msg);
-      msg = popStr(&memory);
+      msg = popStr(memory);
    }
    fclose(stdin);
    return NULL;
@@ -232,8 +233,10 @@ int main(int argc, char* argv[]) {
    }
 
    Arguments argument;
+   liste_t memoire;
    argument.socket = &sock;
    argument.options = options;
+   argument.memoir = &memoire;
    strcpy(argument.utilisateur, argv[1]);
    send(sock, argument.utilisateur, strlen(argument.utilisateur), 0);
 
@@ -263,6 +266,16 @@ int main(int argc, char* argv[]) {
       char temp[size_mess];
       memcpy(temp, message, size_mess);
       // veroiller socket
+
+      if(options.affichageManuel){
+         char* msg = popStr(&memoire);
+         while(msg != NULL){
+            printf("%s", msg);
+            free(msg);
+            msg = popStr(&memoire);
+         }
+      }
+
       if (!options.modeBot) {
          printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
          fflush(stdout);
