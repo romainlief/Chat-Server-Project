@@ -260,13 +260,15 @@ int main(int argc, char* argv[]) {
          continue;
       }
 
+      char temp[size_mess];
+      memcpy(temp, message, size_mess);
       // veroiller socket
       if (!options.modeBot) {
-         printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, message);
+         printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
          fflush(stdout);
       }
 
-      write(sock, message, sizeof(message));
+      write(sock, temp, sizeof(temp));
       // deverouiller socket
       if(options.affichageManuel){
          printf("ici");
