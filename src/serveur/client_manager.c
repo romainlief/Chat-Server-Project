@@ -117,7 +117,6 @@ void handle_client(int client_socket)
 
         // Trouver le client destinataire
         client_t *destinataire = findClientByPseudo(pseudo_receveur);
-        printf("destinataire : %s\n", destinataire->pseudo);
         if (destinataire == NULL)
         {
             char error_msg[MAX_LEN_MESSAGE];
