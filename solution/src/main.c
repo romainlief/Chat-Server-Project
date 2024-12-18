@@ -124,7 +124,7 @@ int addStr(liste_t* ls, const char* str) {
 void * readerThread(void *arg){
    Arguments * argv = (Arguments *) arg;
    char* msg = NULL;
-   char buffer[256];
+   char buffer[1024];
    int * socket = argv->socket;
    liste_t memory;
    if(argv->options.affichageManuel){

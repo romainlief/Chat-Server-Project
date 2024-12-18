@@ -109,6 +109,13 @@ void handle_client(int client_socket)
     {
         buffer[bytes_read] = '\0'; // Null-terminate
 
+        if (bytes_read > MAX_LEN_MESSAGE - 1) {
+            printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
+            close(client_socket);
+            remove_client(client_socket);
+            return;
+        }
+
         // Extraire le pseudonyme du destinataire et le message
         
         char *pseudo_receveur = strtok(buffer, " ");
@@ -121,6 +128,7 @@ void handle_client(int client_socket)
         if (message == NULL)
         {
             printf("Message invalide reçu de %s\n", pseudo);
+            remove_client(client_socket);
             continue;
         }
         printf("Message envoyé de %s à %s : %s\n", pseudo, pseudo_receveur, message);
