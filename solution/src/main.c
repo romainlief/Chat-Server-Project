@@ -1,3 +1,4 @@
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -146,10 +147,12 @@ void * readerThread(void *arg){
          }
 
       }
-      // fflush(stdout);
+      
       
       else{
          code = addStr(&memory, buffer);
+         printf("\a");
+         fflush(stdout);
          if(code == -1){
             msg = popStr(&memory);
             while(msg != NULL){
@@ -169,7 +172,7 @@ void * readerThread(void *arg){
       free(msg);
       msg = popStr(&memory);
    }
-   
+   fclose(stdin);
    return NULL;
 }
 
@@ -240,14 +243,19 @@ int main(int argc, char* argv[]) {
 
    pthread_t second_thread;
    pthread_create(&second_thread, NULL, &readerThread, &argument);
+   
    char* token ;
    
-
-   while((code = getline(&message, &size_mess, stdin))>0){
+   printf("ouverture\n");
+   
+   while((code = getline(&message, &size_mess, stdin))){
       char* verificateur = strdup(message);
       token = strtok(verificateur, " ");
       token = strtok(NULL, " ");
       if(token == NULL || strcmp(token, "\n") == 0 ){
+         if(code == -1){
+            break;
+         }
          printf("nonvalide n\n");
          continue;
       }
@@ -260,20 +268,16 @@ int main(int argc, char* argv[]) {
 
       write(sock, message, sizeof(message));
       // deverouiller socket
+      if(options.affichageManuel){
+         printf("ici");
+      }
    }
-
-   pthread_join(second_thread, NULL);
-
-   // THREADS
-   // pthread_t origin_thread;
    
-   // pthread_create(&origin_thread, NULL, &writerThread, &argument);
-
-   // pthread_join(origin_thread, NULL);
-
-
+   
+     
    // LibererMessageSuspendu(messageSuspendu);
    close(sock);
+   pthread_join(second_thread, NULL);  
    return 0;
 }
 
