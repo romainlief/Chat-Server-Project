@@ -23,7 +23,7 @@
     
     % Titre en haut de la page
     \vspace*{1cm}
-    {\huge \bfseries Info F-201 : Projet d’OS \\
+    {\huge \bfseries Info F-201 : Projet d’OS 2\\
                     Rapport \par}
     
     % Espace vertical pour centrer le logo
@@ -113,13 +113,13 @@ synchroniser l'accès aux ressources partagées, telles que la liste des clients
 \paragraph{}
 
 \section{Solutions Originales et Améliorations}
-\subsection{Gestion des variables globales}
+\subsection{Gestion des constante globales}
 \paragraph{Lors de la création du projet, étant donné que nous avons choisit le C comme langage de programmation, il était interdit 
-d'utiliser de l'orienté objet et donc aucune variable dans les instanciations des objets. Le premier réflexe est donc de mettre
-"const \textless nom de la variable\textgreater  = "valeur" lorsque celle-ci ne doit pas être modifié et "\textless nom de la variable\textgreater = "valeur" lorsqu'elle 
-peut l'être. Nous avons alors fait le choix de mettre tout les variables globales non modifiable sous la forme 
-"\#define \textless nom de la variable\textgreater \textless valeur\textgreater". Cela permet d'avoir une lisibilité accrue, et économiser de l'espace mémoire. Des
-problèmes de compatibilité entre types pourraient apparaître, certes, mais nous n'utilisons les variables globales que comme types simples comme int ou str, tout en
+d'utiliser de l'orienté objet et donc aucune constante dans les instanciations des objets. Le premier réflexe est donc de mettre
+"const \textless nom de la constante\textgreater  = "valeur" lorsque celle-ci ne doit pas être modifié et \textless nom de la constante\textgreater = "valeur" lorsqu'elle 
+peut l'être. Nous avons alors fait le choix de mettre tout les constante globales non modifiable sous la forme 
+"\#define \textless nom de la constante\textgreater \textless valeur\textgreater". Cela permet d'avoir une lisibilité accrue, et économiser de l'espace mémoire. Des
+problèmes de compatibilité entre types pourraient apparaître, certes, mais nous n'utilisons les constante globales que comme types simples comme int ou str, tout en
 faisant attention à leur contexte d'utilisation, nous permettant ainsi d'éviter ces erreurs.}
 
 \section{Conclusion}
