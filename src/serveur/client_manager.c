@@ -94,9 +94,17 @@ void handle_client(int client_socket)
     socklen_t client_len = sizeof(client_address);
     getpeername(client_socket, (struct sockaddr *)&client_address, &client_len);
 
-    while (addClient(client_socket, client_address, pseudo) == -1)
+    while (count_active_clients() >= MAX_CLIENTS)
     {
-        sleep(1); // Attendre avant de réessayer
+        sleep(1); 
+    }
+    
+
+    if (addClient(client_socket, client_address, pseudo) == -1)
+    {
+        printf("Nombre maximum de clients atteint. Déconnexion du client.\n");
+        close(client_socket);
+        return;
     }
 
     printf("Client connecté avec le pseudo : %s\n", pseudo);
