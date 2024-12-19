@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
    
    printf("ouverture\n");
    
-   while((code = getline(&message, &size_mess, stdin)) != -1){
+   while((code = getline(&message, &size_mess, stdin))){
       if(code == -1){
             break;
          }
@@ -305,6 +305,7 @@ int main(int argc, char* argv[]) {
             free(verificateur);
             break;
          }
+         free(verificateur);
          printf("nonvalide\n");
          continue;
       }
@@ -329,6 +330,7 @@ int main(int argc, char* argv[]) {
       }
       
       write(sock, temp, sizeof(temp));
+   free(verificateur);
    }
    
    free(message);
