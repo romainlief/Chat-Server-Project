@@ -1,118 +1,350 @@
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+
+# include <sys/types.h>
+# include <sys/socket.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <unistd.h>
+
+#include "parametres.h"
 #include <signal.h>
-#include <errno.h>
-#include <sys/socket.h>
 
-#define MAX_PSEUDO_LEN 30
-#define MAX_MSG_LEN 1024
+
+#define BUFFER_SIZE 20
 
 
 
-int sockfd;
-char pseudo[MAX_PSEUDO_LEN];
-volatile int running = 1;
+typedef struct {
+  size_t taille;
+  char* valeurs;
+} liste_t;
 
-void handle_signal(int sig) {
-    if (sig == SIGINT) {
-        printf("\nDéconnexion...\n");
-        running = 0;
-        close(sockfd);
-        exit(0);
-    }
+typedef struct {
+   int* socket;
+   OptionsProgramme options;
+   char utilisateur[30]; 
+   liste_t* memoir;
+} Arguments;
+
+
+
+liste_t memoire;
+
+
+
+int checkIP(){
+   const char * var_name = "IP_SERVEUR";
+   const char* delimiter = ".";
+   char * ip = getenv(var_name);
+
+   int n_numbre = 0;
+
+   char * numbre_str = strtok(ip, delimiter);
+   while(numbre_str != NULL){
+
+      if(0 <= atoi(numbre_str) && atoi(numbre_str) < 256 ){
+         n_numbre ++;
+      }
+
+      numbre_str = strtok(NULL, delimiter);
+   }
+
+
+   return n_numbre == 4;
 }
 
-void *receive_messages(void *arg) {
-    char buffer[MAX_MSG_LEN];
-    while (running) {
-        memset(buffer, 0, sizeof(buffer));
-        int bytes_received = recv(sockfd, buffer, sizeof(buffer) - 1, 0);
-        if (bytes_received > 0) {
-            printf("%s\n", buffer);
-        } else if (bytes_received == 0) {
-            printf("Déconnecté du serveur.\n");
-            running = 0;
-            break;
-        } else if (errno != EINTR) {
-            perror("recv");
-            running = 0;
-            break;
-        }
-    }
-    return NULL;
+int checkPort(){
+   const char * var_name = "PORT_SERVEUR";
+   char * port = getenv(var_name);
+
+   return( 0 < atoi(port) && atoi(port) <= 65535);
+   }
+
+liste_t create_mem() {
+  liste_t ls = {0, NULL};
+  ls.valeurs = (char *)malloc(BUFFER_SIZE);
+  if (ls.valeurs == NULL) {
+    perror("malloc()");
+    free(ls.valeurs);
+    exit(1);
+  }
+  return ls;
 }
 
-int main(int argc, char *argv[]) {
-    if (argc < 2) {
-        fprintf(stderr, "Usage : ./chat PSEUDO\n");
-        return 1;
+
+char* popStr(liste_t* ls) {
+  if (ls->taille == 0) {
+      printf("Memory is empty\n");
+      return NULL;
+  }
+
+  size_t idx = 0;
+  do {
+    idx++;
+  } while (ls->valeurs[idx] != '\0' && ls->taille >= idx);
+  
+  idx++; // to fit in '\0'
+  ls->taille -= idx;
+
+  char* retStr = (char *)malloc(idx + 1);
+  if (retStr == NULL) {
+    perror("malloc()");
+    free(retStr);
+    exit(1);
+  }
+  memcpy(retStr, ls->valeurs, idx); 
+  memmove(ls->valeurs, ls->valeurs + idx, ls->taille); // shifting values to the left
+
+  return retStr;
+
+}
+
+char* retStr(char* mem) {
+    if (mem == NULL || mem[0] == '\0') {
+        printf("Memory is empty\n");
+        return NULL;
     }
+    return mem;
+}
 
-    if (strlen(argv[1]) >= MAX_PSEUDO_LEN) {
-        fprintf(stderr, "Erreur : pseudonyme trop long (max %d caractères).\n", MAX_PSEUDO_LEN);
-        return 2;
+
+int addStr(liste_t* ls, const char* str) {
+    size_t str_len = strlen(str);
+
+    if (ls->taille + str_len + 1 >= BUFFER_SIZE) {
+        printf("Memory is full\n");
+        return -1;
     }
-    strcpy(pseudo, argv[1]);
-
-    struct sigaction sa;
-    sa.sa_handler = handle_signal;
-    sa.sa_flags = 0;
-    sigemptyset(&sa.sa_mask);
-    sigaction(SIGINT, &sa, NULL);
-
-    const char *ip = getenv("IP_SERVEUR") ? getenv("IP_SERVEUR") : "127.0.0.1";
-    int port = getenv("PORT_SERVEUR") ? atoi(getenv("PORT_SERVEUR")) : 1234;
-
-    sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd < 0) {
-        perror("socket");
-        return 1;
-    }
-
-    struct sockaddr_in server_addr = {
-        .sin_family = AF_INET,
-        .sin_port = htons(port)
-    };
-    inet_pton(AF_INET, ip, &server_addr.sin_addr);
-
-    if (connect(sockfd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        perror("connect");
-        close(sockfd);
-        return 1;
-    }
-
-    send(sockfd, pseudo, strlen(pseudo), 0);
-
-    pthread_t recv_thread;
-    if (pthread_create(&recv_thread, NULL, receive_messages, NULL) != 0) {
-        perror("pthread_create");
-        close(sockfd);
-        return 1;
-    }
-
-    char message[MAX_MSG_LEN];
-    while (running) {
-        printf("> ");
-        if (fgets(message, sizeof(message), stdin) == NULL) break;
-
-        size_t len = strlen(message);
-        if (len > 0 && message[len - 1] == '\n') message[len - 1] = '\0';
-
-        char formatted_message[MAX_MSG_LEN + MAX_PSEUDO_LEN + 3];
-        snprintf(formatted_message, sizeof(formatted_message), "[%s] %s", pseudo, message);
-
-        if (send(sockfd, formatted_message, strlen(formatted_message), 0) < 0) {
-            perror("send");
-            break;
-        }
-    }
-
-    running = 0;
-    pthread_join(recv_thread, NULL);
-    close(sockfd);
+    
+    memcpy(ls->valeurs + ls->taille , str, str_len);
+    ls->taille += str_len;
+    ls->valeurs[ls->taille] = '\0';
+    ls->taille++;
     return 0;
 }
+
+void pipe_closure(int sig){
+   fclose(stdin);
+}
+
+void * readerThread(void *arg){
+   signal(SIGPIPE, pipe_closure);
+   Arguments * argv = (Arguments *) arg;
+   char* msg = NULL;
+   char buffer[1024];
+   int * socket = argv->socket;
+   liste_t* memory = argv->memoir;
+   if(argv->options.affichageManuel){
+      *memory = create_mem();
+   }
+   printf("test\n");
+   int code;
+   while((read(*socket, buffer, sizeof(buffer))) > 0){
+      
+      if(!argv->options.affichageManuel){
+         if (argv->options.modeBot) {
+            
+            printf("%s", buffer);
+         } else {
+            char * separators = "[]";
+            char* tok = strtok(buffer, separators);
+            printf("[\x1B[4m%s\x1B[0m]", tok);
+            tok = strtok(NULL, "");
+            printf("%s", tok);
+         }
+
+      }
+      
+      
+      else{
+         code = addStr(memory, buffer);
+         printf("\a");
+         fflush(stdout);
+         if(code == -1){
+            msg = popStr(memory);
+            while(msg != NULL){
+               printf("%s", msg);
+               free(msg);
+               msg = popStr(memory);
+            }
+            code = addStr(memory, buffer);
+         }
+         
+      }
+
+   }
+   msg = popStr(memory);
+   while(msg != NULL){
+      printf("%s", msg);
+      free(msg);
+      msg = popStr(memory);
+   }
+   
+   
+   kill(getpid(), SIGPIPE);
+   // fclose(stdin);
+   printf("ici");
+   return NULL;
+}
+
+
+
+void ext(int sig){
+   exit(4);
+}
+
+void set_vider(int sig){
+   char* msg = popStr(&memoire);
+   while(msg != NULL){
+      printf("%s", msg);
+      free(msg);
+      msg = popStr(&memoire);
+   }
+}
+
+
+
+
+int main(int argc, char* argv[]) {
+   // signal(SIGPIPE, pipe_closure);
+   OptionsProgramme options;
+   GererParameteres(argc, argv, &options);
+
+   
+   signal(SIGINT, ext); // exit 4 si SIGINT
+   
+
+   const char * port_name = "PORT_SERVEUR";
+   const char * port_value = "1234";
+   setenv(port_name, port_value, 1);
+   
+   const char * IP_name = "IP_SERVEUR";
+   const char * IP_value = "127.0.0.1";
+   setenv(IP_name, IP_value, 1);
+
+
+
+
+
+   int port = 1234;  // valeur defaut
+   char ip[] = "127.0.0.1";   // valeur defaut
+   int sock = socket(AF_INET, SOCK_STREAM, 0);
+
+
+
+   if(checkPort() == 1){
+      char * port_value_str = getenv(port_name);
+      port = atoi(port_value_str);
+   }
+
+
+   struct sockaddr_in serv_addr = {
+   .sin_family = AF_INET ,
+   .sin_port = htons(port)
+   };
+
+
+   if(checkIP() == 1){
+      inet_pton(AF_INET, getenv(IP_name), &serv_addr.sin_addr);
+   }
+   else{
+      inet_pton(AF_INET, ip, &serv_addr.sin_addr);
+   }
+
+   
+   if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1){
+      perror("SOCKET NON FAIT");
+      exit(1);
+   }
+   
+   
+   if(!options.affichageManuel){   //igniore signint
+      sigset_t set;
+      sigemptyset(&set);
+      sigaddset(&set, SIGINT);
+      pthread_sigmask(SIG_BLOCK, &set, NULL);
+   }
+   else{
+      signal(SIGINT, set_vider);
+   }
+   
+
+   Arguments argument;
+   // liste_t memoire;
+   argument.socket = &sock;
+   argument.options = options;
+   argument.memoir = &memoire;
+   strcpy(argument.utilisateur, argv[1]);
+   send(sock, argument.utilisateur, strlen(argument.utilisateur), 0);
+
+   char* message = NULL;
+   size_t size_mess = 0;
+   ssize_t code;
+
+   pthread_t second_thread;
+   pthread_create(&second_thread, NULL, &readerThread, &argument);
+   
+   char* token ;
+   
+   printf("ouverture\n");
+   
+   while((code = getline(&message, &size_mess, stdin))){
+      if(code == -1){
+            break;
+         }
+
+      int spacecounter = 0;
+      int idx = 0;
+      
+      while(message[idx] == ' '){
+         spacecounter ++;
+         idx++;
+      }
+
+      char* verificateur = strdup(message);
+      token = strtok(verificateur, " ");
+      token = strtok(NULL, " ");
+      if(token == NULL || strcmp(token, "\n") == 0 || spacecounter > 0){
+         if(code == -1){
+            free(verificateur);
+            break;
+         }
+         free(verificateur);
+         printf("nonvalide\n");
+         continue;
+      }
+
+      char temp[size_mess];
+      memcpy(temp, message, size_mess);
+
+      
+
+      if (!options.modeBot) {
+         printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
+         fflush(stdout);
+      }
+
+      if(options.affichageManuel){
+         char* msg = popStr(&memoire);
+         while(msg != NULL){
+            printf("%s", msg);
+            free(msg);
+            msg = popStr(&memoire);
+         }
+      }
+      
+      write(sock, temp, sizeof(temp));
+   free(verificateur);
+   }
+   
+   free(message);
+     
+   // LibererMessageSuspendu(messageSuspendu);
+   close(sock);
+   pthread_join(second_thread, NULL);  
+   return 0;
+}
+

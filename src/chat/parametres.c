@@ -4,7 +4,15 @@
 #include <stdbool.h>
 
 #include "parametres.h"
-#include "processus.h"
+
+enum {
+   CODE_RETOUR_NORMAL,
+   CODE_RETOUR_PARAMETRES_MANQUANTS,
+   CODE_RETOUR_PSEUDO_TROP_LONG,
+   CODE_RETOUR_PSEUDO_CARACTERES_INVALIDES,
+   CODE_RETOUR_ARRET_SIGINT,
+   CODE_RETOUR_ERREUR_AUTRE
+};
 
 static void VerifierValiditePseudonymes(int argc, char* argv[]) {
    if (argc < 2) {
