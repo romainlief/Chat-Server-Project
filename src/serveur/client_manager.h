@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <stdatomic.h>
 
 #include "constants.h"
 #include "error_handler.h"

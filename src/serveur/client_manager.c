@@ -1,5 +1,6 @@
 #include "client_manager.h"
 
+atomic_int client_count = 0; // nombre de clients dans la file d'attente
 extern pthread_mutex_t clients_mutex; // Mutex pour synchroniser l'accès au tableau des clients
 extern client_t clients[MAX_CLIENTS]; // Tableau des clients
 
@@ -94,18 +95,28 @@ void handle_client(int client_socket)
     socklen_t client_len = sizeof(client_address);
     getpeername(client_socket, (struct sockaddr *)&client_address, &client_len);
 
-    while (count_active_clients() >= MAX_CLIENTS)
+    //while (count_active_clients() >= MAX_CLIENTS)
+    //{
+        //printf("client  actif : %d\n", count_active_clients());
+      //  sleep(1); 
+    //}
+
+    client_count++;
+    while (addClient(client_socket, client_address, pseudo) == -1)
     {
+        if (client_count >= MAX_CLIENTS)
+        {
+            char error_msg[MAX_LEN_MESSAGE];
+            snprintf(error_msg, sizeof(error_msg), "Nombre maximum de clients atteint. Déconnexion du client.\n");
+            send(client_socket, error_msg, strlen(error_msg), 0);
+            close(client_socket);
+            client_count--;
+            return;
+        }
         sleep(1); 
     }
-    
+    client_count--;
 
-    if (addClient(client_socket, client_address, pseudo) == -1)
-    {
-        printf("Nombre maximum de clients atteint. Déconnexion du client.\n");
-        close(client_socket);
-        return;
-    }
 
     printf("Client connecté avec le pseudo : %s\n", pseudo);
 
