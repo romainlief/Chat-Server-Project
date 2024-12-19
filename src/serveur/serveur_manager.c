@@ -2,6 +2,27 @@
 
 int server_fd; // Descripteur du socket du serveur
 
+// Gestionnaire pour SIGINT
+void handle_sigint(int sig)
+{
+    printf("SIGINT reçu: fermeture du serveur!\n");
+    close(server_fd);
+    exit(0);
+}
+
+
+void setup_signal_handlers()
+{
+    struct sigaction sa_int;
+    struct sigaction sa_pipe;
+
+    sa_int.sa_handler = handle_sigint;
+    sigemptyset(&sa_int.sa_mask);
+    sa_int.sa_flags = 0;
+
+    sigaction(SIGINT, &sa_int, NULL);
+}
+
 int getServeurPort()
 {
     int port = PORT_PAR_DEFAULT;
@@ -56,6 +77,7 @@ int initServeur(int port)
 
 void run_server(int server_socket)
 {
+    setup_signal_handlers(); 
     while (1)
     {
         struct sockaddr_in client_address;

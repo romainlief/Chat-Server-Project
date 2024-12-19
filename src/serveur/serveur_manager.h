@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
+#include <signal.h>
 
 #include "constants.h"
 #include "client_manager.h"
