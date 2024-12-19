@@ -16,6 +16,19 @@
 #include "error_handler.h"
 
 /**
+ * @brief Gestionnaire de signal pour SIGINT
+ * 
+ * @param sig signal reçu
+ */
+void sigint_handler(int sig);
+
+/**
+ * @brief Configuration de sigaction pour SIGINT
+ * 
+ */
+void sigaction_setup();
+
+/**
  * @brief Récupère le port du serveur depuis la variable d'environnement PORT_SERVEUR
  *
  * @return port du serveur
