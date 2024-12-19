@@ -82,13 +82,7 @@ void run_server(int server_socket)
         struct sockaddr_in client_address;
         socklen_t client_len = sizeof(client_address);
 
-        // Accepter une nouvelle connexion
-
-        if (count_active_clients() >= MAX_CLIENTS) {
-            sleep(1); 
-            continue;
         
-        }
         int valide = 1;
         int *new_client_socket = malloc(sizeof(int));
         if (new_client_socket == NULL)
