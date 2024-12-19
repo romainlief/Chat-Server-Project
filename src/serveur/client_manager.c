@@ -3,11 +3,9 @@
 extern pthread_mutex_t clients_mutex; // Mutex pour synchroniser l'accès au tableau des clients
 extern client_t clients[MAX_CLIENTS]; // Tableau des clients
 
-
 int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
 {
     checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
-
 
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
@@ -95,11 +93,10 @@ void handle_client(int client_socket)
     struct sockaddr_in client_address;
     socklen_t client_len = sizeof(client_address);
     getpeername(client_socket, (struct sockaddr *)&client_address, &client_len);
-    if (addClient(client_socket, client_address, pseudo) == -1)
+
+    while (addClient(client_socket, client_address, pseudo) == -1)
     {
-        printf("Impossible d'ajouter le client.\n");
-        close(client_socket);
-        return;
+        sleep(1); // Attendre avant de réessayer
     }
 
     printf("Client connecté avec le pseudo : %s\n", pseudo);
@@ -109,7 +106,8 @@ void handle_client(int client_socket)
     {
         buffer[bytes_read] = '\0'; // Null-terminate
 
-        if (bytes_read > MAX_LEN_MESSAGE - 1) {
+        if (bytes_read > MAX_LEN_MESSAGE - 1)
+        {
             printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
             close(client_socket);
             remove_client(client_socket);
@@ -117,7 +115,7 @@ void handle_client(int client_socket)
         }
 
         // Extraire le pseudonyme du destinataire et le message
-        
+
         char *pseudo_receveur = strtok(buffer, " ");
         if (pseudo_receveur == NULL)
         {
@@ -131,8 +129,6 @@ void handle_client(int client_socket)
             remove_client(client_socket);
             continue;
         }
-        printf("Message envoyé de %s à %s : %s\n", pseudo, pseudo_receveur, message);
-        printf("taille du message : %d\n", strlen(message));
         printf("message : %s\n", message);
 
         // Trouver le client destinataire
@@ -148,11 +144,8 @@ void handle_client(int client_socket)
         // Envoyer le message au destinataire
         char full_message[MAX_LEN_MESSAGE];
         snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
-        printf("taille du message : %d\n", strlen(full_message));
         send(destinataire->socket_fd, full_message, strlen(full_message), 0);
-        
     }
-
 
     printf("Client %s déconnecté\n", pseudo);
     remove_client(client_socket);
