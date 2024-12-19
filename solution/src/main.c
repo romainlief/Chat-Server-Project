@@ -128,12 +128,12 @@ int addStr(liste_t* ls, const char* str) {
     return 0;
 }
 
-void exemple(int sig){
+void pipe_closure(int sig){
    fclose(stdin);
 }
 
 void * readerThread(void *arg){
-   signal(SIGPIPE, exemple);
+   signal(SIGPIPE, pipe_closure);
    Arguments * argv = (Arguments *) arg;
    char* msg = NULL;
    char buffer[1024];
@@ -211,7 +211,7 @@ void set_vider(int sig){
 
 
 int main(int argc, char* argv[]) {
-   // signal(SIGPIPE, exemple);
+   // signal(SIGPIPE, pipe_closure);
    OptionsProgramme options;
    GererParameteres(argc, argv, &options);
 
@@ -293,7 +293,7 @@ int main(int argc, char* argv[]) {
    
    printf("ouverture\n");
    
-   while((code = getline(&message, &size_mess, stdin))){
+   while((code = getline(&message, &size_mess, stdin)) != -1){
       if(code == -1){
             break;
          }
@@ -302,6 +302,7 @@ int main(int argc, char* argv[]) {
       token = strtok(NULL, " ");
       if(token == NULL || strcmp(token, "\n") == 0 ){
          if(code == -1){
+            free(verificateur);
             break;
          }
          printf("nonvalide\n");
@@ -330,7 +331,7 @@ int main(int argc, char* argv[]) {
       write(sock, temp, sizeof(temp));
    }
    
-   
+   free(message);
      
    // LibererMessageSuspendu(messageSuspendu);
    close(sock);

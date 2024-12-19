@@ -8,8 +8,8 @@ EXE     := $(BINDIR)$(NAME)
 SFILES  := c
 OFILES  := o
 CC      := gcc
-CFLAGS  := -Wall -Wextra -O3 -std=gnu2x -pedantic -march=native -Wnull-dereference -Winline -Wconversion #-flto -pipe -g -fsanitize=address,undefined # gcc-13
-LIBS    := #-fsanitize=address,undefined -lm
+CFLAGS  := -Wall -Wextra -O3 -std=gnu2x -pedantic -march=native -Wnull-dereference -Winline -Wconversion -flto -pipe -g -fsanitize=address,undefined
+LIBS    := -fsanitize=address,undefined
 
 SOURCES := $(shell find $(SRCDIR) -name "*.$(SFILES)")
 OBJECTS := $(patsubst $(SRCDIR)%.$(SFILES), $(OBJDIR)%.$(OFILES), $(SOURCES))
