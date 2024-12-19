@@ -297,10 +297,19 @@ int main(int argc, char* argv[]) {
       if(code == -1){
             break;
          }
+
+      int spacecounter = 0;
+      int idx = 0;
+      
+      while(message[idx] == ' '){
+         spacecounter ++;
+         idx++;
+      }
+
       char* verificateur = strdup(message);
       token = strtok(verificateur, " ");
       token = strtok(NULL, " ");
-      if(token == NULL || strcmp(token, "\n") == 0 ){
+      if(token == NULL || strcmp(token, "\n") == 0 || spacecounter > 0){
          if(code == -1){
             free(verificateur);
             break;
