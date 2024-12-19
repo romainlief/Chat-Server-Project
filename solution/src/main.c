@@ -128,7 +128,12 @@ int addStr(liste_t* ls, const char* str) {
     return 0;
 }
 
+void exemple(int sig){
+   fclose(stdin);
+}
+
 void * readerThread(void *arg){
+   signal(SIGPIPE, exemple);
    Arguments * argv = (Arguments *) arg;
    char* msg = NULL;
    char buffer[1024];
@@ -179,7 +184,11 @@ void * readerThread(void *arg){
       free(msg);
       msg = popStr(memory);
    }
-   fclose(stdin);
+   
+   
+   kill(getpid(), SIGPIPE);
+   // fclose(stdin);
+   printf("ici");
    return NULL;
 }
 
@@ -201,8 +210,8 @@ void set_vider(int sig){
 
 
 
-
 int main(int argc, char* argv[]) {
+   // signal(SIGPIPE, exemple);
    OptionsProgramme options;
    GererParameteres(argc, argv, &options);
 
@@ -253,7 +262,6 @@ int main(int argc, char* argv[]) {
       exit(1);
    }
    
-   // signal(SIGINT, emptyMemory);
    
    if(!options.affichageManuel){   //igniore signint
       sigset_t set;
@@ -286,6 +294,9 @@ int main(int argc, char* argv[]) {
    printf("ouverture\n");
    
    while((code = getline(&message, &size_mess, stdin))){
+      if(code == -1){
+            break;
+         }
       char* verificateur = strdup(message);
       token = strtok(verificateur, " ");
       token = strtok(NULL, " ");
@@ -323,7 +334,6 @@ int main(int argc, char* argv[]) {
      
    // LibererMessageSuspendu(messageSuspendu);
    close(sock);
-   
    pthread_join(second_thread, NULL);  
    return 0;
 }
