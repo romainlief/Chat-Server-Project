@@ -3,23 +3,11 @@
 extern pthread_mutex_t clients_mutex; // Mutex pour synchroniser l'accès au tableau des clients
 extern client_t clients[MAX_CLIENTS]; // Tableau des clients
 
-int checked(int ret, char *calling_function)
-{
-    if (ret < 0)
-    {
-        perror(calling_function);
-        exit(EXIT_FAILURE);
-    }
-    return ret;
-}
 
 int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
 {
-    if (pthread_mutex_lock(&clients_mutex) != 0)
-    {
-        perror("pthread_mutex_lock");
-        return -1;
-    }
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
+
 
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
@@ -30,43 +18,35 @@ int addClient(int socket_fd, struct sockaddr_in address, const char *pseudo)
             clients[i].is_active = 1;
             strncpy(clients[i].pseudo, pseudo, MAX_LEN_PSEUDO - 1);
             clients[i].pseudo[MAX_LEN_PSEUDO - 1] = '\0';
-            if (pthread_mutex_unlock(&clients_mutex) != 0)
-            {
-                perror("pthread_mutex_unlock");
-                return -1;
-            }
+            checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
             return 0;
         }
     }
 
     // Déverrouillage du mutex si aucun emplacement libre n'a été trouvé
-    if (pthread_mutex_unlock(&clients_mutex) != 0)
-    {
-        perror("pthread_mutex_unlock");
-        return -1;
-    }
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
     return -1; // Aucun emplacement libre
 }
 
 client_t *findClientByPseudo(const char *pseudo)
 {
-    pthread_mutex_lock(&clients_mutex);
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if (clients[i].is_active && strcmp(clients[i].pseudo, pseudo) == 0)
         {
-            pthread_mutex_unlock(&clients_mutex);
+            checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
             return &clients[i];
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
     return NULL; // Aucun client trouvé
 }
 
 int count_active_clients()
 {
     int count = 0;
-    pthread_mutex_lock(&clients_mutex);
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if (clients[i].is_active)
@@ -74,23 +54,23 @@ int count_active_clients()
             count++;
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
     return count;
 }
 
 void remove_client(int client_socket)
 {
-    pthread_mutex_lock(&clients_mutex);
+    checked(pthread_mutex_lock(&clients_mutex), "pthread_mutex_lock");
     for (int i = 0; i < MAX_CLIENTS; i++)
     {
         if (clients[i].socket_fd == client_socket && clients[i].is_active)
         {
-            close(client_socket);
+            checked(close(client_socket), "close");
             clients[i].is_active = 0;
             break;
         }
     }
-    pthread_mutex_unlock(&clients_mutex);
+    checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
 }
 
 void handle_client(int client_socket)
@@ -128,16 +108,32 @@ void handle_client(int client_socket)
     while ((bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0)
     {
         buffer[bytes_read] = '\0'; // Null-terminate
-        printf("Message reçu du client %s : %s\n", pseudo, buffer);
+
+        if (bytes_read > MAX_LEN_MESSAGE - 1) {
+            printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
+            close(client_socket);
+            remove_client(client_socket);
+            return;
+        }
 
         // Extraire le pseudonyme du destinataire et le message
-        char *pseudo_envoyeur = strtok(buffer, " ");
-        printf("pseudo_envoyeur : %s\n", pseudo_envoyeur);
-
-        char *pseudo_receveur = strtok(NULL, " ");
-        printf("pseudo_receveur : %s\n", pseudo_receveur);
-
+        
+        char *pseudo_receveur = strtok(buffer, " ");
+        if (pseudo_receveur == NULL)
+        {
+            printf("Message invalide reçu de %s\n", pseudo);
+            continue;
+        }
         char *message = strtok(NULL, "\0");
+        if (message == NULL)
+        {
+            printf("Message invalide reçu de %s\n", pseudo);
+            remove_client(client_socket);
+            continue;
+        }
+        printf("Message envoyé de %s à %s : %s\n", pseudo, pseudo_receveur, message);
+        printf("taille du message : %d\n", strlen(message));
+        printf("message : %s\n", message);
 
         // Trouver le client destinataire
         client_t *destinataire = findClientByPseudo(pseudo_receveur);
@@ -152,8 +148,11 @@ void handle_client(int client_socket)
         // Envoyer le message au destinataire
         char full_message[MAX_LEN_MESSAGE];
         snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
+        printf("taille du message : %d\n", strlen(full_message));
         send(destinataire->socket_fd, full_message, strlen(full_message), 0);
+        
     }
+
 
     printf("Client %s déconnecté\n", pseudo);
     remove_client(client_socket);

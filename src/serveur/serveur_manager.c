@@ -9,7 +9,7 @@ int getServeurPort()
 
     if (port_env != NULL)
     {
-        for (int i = 0; port_env[i] != '\0'; i++)
+        for (int i = 0; port_env[i] != '\0'; i++) 
         {
             if (!isdigit(port_env[i]))
             {
@@ -19,13 +19,13 @@ int getServeurPort()
         }
 
         int env_port = atoi(port_env);
-        if (env_port > 0 && env_port <= 65535)
+        if (env_port >= BORNES_PORT_MIN && env_port <= BORNES_PORT_MAX)
         {
             port = env_port;
         }
         else
         {
-            fprintf(stderr, "Port hors plage (1-65535), utilisation du port par défaut (%d)\n", PORT_PAR_DEFAULT);
+            fprintf(stderr, "Port hors bornes (1-65535), utilisation du port par défaut (%d)\n", PORT_PAR_DEFAULT);
         }
     }
 
@@ -51,8 +51,6 @@ int initServeur(int port)
     checked(bind(server_fd, (struct sockaddr *)&address, sizeof(address)), "bind"); // Liaison du socket à l'adresse et au port spécifiés
     checked(listen(server_fd, MAX_CONNEXIONS), "listen");                           // Mise en écoute du serveur
 
-    printf("Serveur démarré sur le port %d\n", port);
-
     return server_fd;
 }
 
@@ -64,6 +62,13 @@ void run_server(int server_socket)
         socklen_t client_len = sizeof(client_address);
 
         // Accepter une nouvelle connexion
+
+        if (count_active_clients() >= MAX_CLIENTS) {
+            sleep(1); 
+            continue;
+        
+        }
+        int valide = 1;
         int *new_client_socket = malloc(sizeof(int));
         if (new_client_socket == NULL)
         {
@@ -71,24 +76,25 @@ void run_server(int server_socket)
             continue;
         }
 
-        *new_client_socket = accept(server_socket, (struct sockaddr *)&client_address, &client_len);
-        if (*new_client_socket < 0)
-        {
-            perror("accept");
-            free(new_client_socket);
-            continue;
-        }
-
         // Vérifier si le nombre de connexions atteint la limite
-        if (count_active_clients() >= MAX_CLIENTS)
-        {
-            printf("Nombre maximal de clients atteint. Rejet de la connexion.\n");
-            close(*new_client_socket);
-            free(new_client_socket);
-            continue;
-        }
 
-        printf("Nouvelle connexion acceptée.\n");
+        // sleep(1); // Attendre avant de réessayer 
+        // continue;
+
+        if(valide){
+            
+            *new_client_socket = checked(accept(server_socket, (struct sockaddr *)&client_address, &client_len), "accept");
+            if (*new_client_socket < 0)
+            {
+                perror("accept");
+                free(new_client_socket);
+                continue;
+            }
+        }
+        
+    
+
+        // printf("Nouvelle connexion acceptée.\n");
 
         // Créer un thread pour gérer le client
         pthread_t thread_id;
@@ -99,5 +105,6 @@ void run_server(int server_socket)
             free(new_client_socket);
         }
         pthread_detach(thread_id); // Détacher le thread pour éviter les fuites de ressources
+    
     }
 }

@@ -10,7 +10,7 @@ int main(void)
 
     run_server(server_socket);
 
-    close(server_socket);
+    checked(close(server_socket), "close");
 
     return 0;
 }
