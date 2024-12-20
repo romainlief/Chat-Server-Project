@@ -55,79 +55,92 @@
 
 \section{Introduction}
 \subsection{Présentation du projet et contexte}
-\paragraph{Dans le cadre de notre cours d'OS, nous avons réalisé un projet qui consiste à implémenter unz messagerie en ligne comprenant un serveur en C.
-Ce chat, permet la communication entre deux clients via des sockets en ligne et sur des ordinateurs différents. La messagerie est composé de deux parties, celle décrite ci-dessus et une autre écrite en bash,
-faisant office de chat-auto permettant la facilitation de l'utilisation du programme chat. Ce chat-auto est conçu pour simuler un client en automatisant les taches d'envoies de messages à l'interlocuteur.\\
-Le projet se compose donc de deux parties : le programme de messagerie avec (client) et (server) et le script Bash (chat-auto).}
+\paragraph{Dans le cadre de notre cours, nous avons réalisé un second projet qui, en s'appuyant sur les bases établies par le premier, vise à implémenter une messagerie en ligne utilisant un serveur implémenté en C.
+Cette messagerie permet donc la communication entre deux clients utilisant des ordinateurs différents, grâce à des sockets qui gèrent la connexion en ligne. 
+Elle se compose de deux parties. La première est un programme `chat' s'occupant de, comme son nom l'indique, d'établir un système de chat entre le client et le serveur. La seconde 
+est un script bash faisant office de `chat-auto' facilitant l'utilisation du programme chat. \\
+Ce rapport décrit donc les choix d'implémentation, les difficultés rencontrées et les solutions mises en œuvre pour arriver à un résultat final satisfaisant nos attentes.}
 
 \subsection{Objectifs du projet}
-\paragraph{L'objectif de ce projet est de mettre en pratique les concepts vus en cours d'OS, notamment les sockets, les threads, la gestion
-des signaux, les mutexs,et le bash. 
-Ce rapport décrit les choix d'implémentation, les difficultés rencontrées et les solutions mises en œuvre utilisée dans la 
-construction de ce projet.}
+\paragraph{A l'image du précédent, l'objectif de ce second projet est de mettre en pratique les concepts vus en cours d'OS. Comme évoqué dans l'introduction, nous nous basons donc
+sur le premier projet. De ce fait, certains concepts comme les threads, la gestion des signaux et le bash sont une fois de plus utilisés. De nouveaux concepts s'ajoutent naturellement 
+au premiers, à savoir les sockets et les mutexs. \\
+Ce projet permet donc d'encore élargir notre éventail de compétences concernant les outils liés aux OS.}
 
-\section{Choix d’Implémentation}
+\section{Choix d’implémentation}
 \subsection{Choix du langage}
-\paragraph{Dans le cadre de ce projet, nous avions le choix entre le C et le C++ comme langage de programmation.
-Nous avons fait le choix d'utiliser du C car c'est en C que nous avons vu la matère durant les séances de travaux 
-pratiques et que la solution du premier projet a été faites en C. 
-De plus, ayant fait le premier projet en C, il aurait été plus compliqué de faire le deuxième en C++ car il aurait 
-fallu faire des recherches supplémentaires pour comprendre les différences entre les deux langages.}
+\paragraph{Le choix du langage de programmation entre le C et le C++ s'est une fois de plus offert à nous. Le C tombait sous le sens pour deux raisons bien distinctes. 
+La première étant simplement le fait que le C est le langage utilisé durant les séances d'exercices et les cours théoriques. Ensuite, nous avons réalisé le premier projet en C. \\
+Notre choix est donc une continuation logique de ces deux raisons.}
 
 \subsection{Choix de la méthode de gestion des clients}
-\paragraph{Dans le cadre de ce projet, nous avons fait le choix de gérer les clients via des threads. Chaques clients est géré par un thread différent.
-Cela permet de gérer plusieurs clients en même temps et de ne pas bloquer le serveur lorsqu'un client envoie un message.
-C'est la fonction handle\_client qui est exécutée dans un thread différent pour chaque client.
-Nous avons choisi cette méthode car ceux-ci présentent plusieurs avantages :}
+\paragraph{Concernant la gestion des clients nous avons fait le choix de les gérer à l'aide de threads. Autrement dit, à chaque client, un thread différent est assigné qui exécute
+la fonction `handle\_client'. Cette approche possède divers avantages décrits ci-dessous:}
 \begin{itemize}
-    \item \textbf{Concurrence et Réactivité :} L'utilisation des threads permet de traiter les requêtes des clients de manière concurrente. Chaque client est géré indépendamment, ce qui améliore la réactivité du serveur. Si un client envoie seulement des messages de manière sporadique, cela n'affecte pas les autres clients.
-    \item \textbf{Simplicité de l'implémentation :} Les threads sont relativement simples à utiliser (pthread).
-    \item \textbf{Utilisation efficace des ressources :} Les threads partagent le même espace mémoire, ce qui permet une communication rapide et efficace entre eux. Les processus quant a eux n'auraient pas été une solution légère en mémoire pour gérer les clients.
-    \item \textbf{Gestion à grande échelle :} Avec les threads, le serveur peut facilement gérer un grand nombre de clients simultanément. Chaque nouveau client est simplement un nouveau thread, ce qui permet une gestion dynamique des connexions.
+    \item \textbf{Concurrence et Réactivité:} L'utilisation des threads permet de traiter les requêtes des clients de manière concurrente. Un message envoyé par un client n'affecte pas les autres clients.
+    \item \textbf{Fluidité du serveur:} Le serveur étant indépendant des clients, ceux-cis ne peuvent pas le bloquer à cause d'une erreur qui leur est inhérente. Ceci permet donc d'avoir un serveur fluide et réactif.
+    \item \textbf{Simplicité de l'implémentation:} Les threads sont relativement simples à utiliser (pthread).
+    \item \textbf{Utilisation efficace des ressources:} Les threads partagent le même espace mémoire, ce qui permet une communication rapide et efficace entre eux.
+    \item \textbf{Gestion à grande échelle:} Avec les threads, le serveur peut facilement gérer un grand nombre de clients simultanément. Chaque nouveau client est simplement un nouveau thread, 
+    ce qui permet une gestion claire et dynamique des connexions.
 \end{itemize}
 
-\paragraph{Alternatives considérées :}
+\paragraph{Alternatives considérées:}
 \begin{itemize}
-    \item \textbf{Multiprocessing :} Utiliser des processus multiples pour chaque client aurait été une alternative. Cependant, cette méthode consomme plus de ressources car chaque processus a son propre espace mémoire. La communication entre processus est également plus complexe et moins efficace que la communication entre threads.
-    \item \textbf{Multiplexing/Polling (select, poll, epoll) :} Une autre méthode aurait été d'utiliser des techniques de polling comme \texttt{select}, \texttt{poll} ou \texttt{epoll}. Bien que ces techniques soient certainement efficaces pour gérer de nombreuses connexions simultanées sans bloquer, elles sont plus complexes à implémenter et n'ayant pas beaucoup de temps pour ce projet ainsi que des connaissance restreinte sur le sujet, nous ne nous sommes pas risqué a les utiliser.
+    \item \textbf{Multiprocessing:} Remplacer les threads par des processus assignés à chaque client est certes une alternative, cependant, cette méthode consomme nettement plus de ressources. En effet, chaque 
+    processus a son propre espace mémoire. Ceci nécessite donc une gestion de communication entre processus qui peut s'avérer plus complexe et moins efficace que celle entre threads.
+    \item \textbf{Multiplexing/Polling (select, poll, epoll):} Une autre alternative est l'utilisation des techniques de polling comme \texttt{select}, \texttt{poll} ou \texttt{epoll}. 
+    Bien que ces techniques sont certainement tout aussi efficaces que les threads pour gérer de nombreuses connexions simultanées sans causer de bloquage, elles sont plus complexes à implémenter. N'ayant pas beaucoup de temps 
+    pour la réalisation du projet et nos connaissances étant restreintes sur le sujet, nous ne nous sommes pas risqués a les utiliser.
 \end{itemize}
 
-\paragraph{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, 
-efficace et facile à maintenir, capable de gérer plusieurs clients simultanément sans être trop 
-compliqué a gérer.}
+\paragraph{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, efficace et facile à maintenir, capable de gérer plusieurs clients simultanément.}
 
 \subsection{Gestion des accès concurrents}
-\paragraph{Pour que notre messagerie fonctionne correctement, la gestion des accès concurrents était un défi cruciale à réaliser pour assurer 
-l'intégrité des données partagées entre les différents threads. Nous avons donc utilisé des mutex pour 
-synchroniser l'accès aux ressources partagées, telles que la liste des clients connectés. Voici quelques exemples ou nous les avons utilisé :}
-\begin{itemize}
-    \item \textbf{Protection de la liste des clients :} La liste des clients connectés est une ressource partagée entre les différents threads. Pour éviter les conditions de course et garantir la sécurité des données, nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter ou de supprimer un client de la liste, le thread doit verrouiller ce mutex. Une fois les opérations terminée, le mutex est déverrouillé.
-    \item \textbf{Fonctions critiques :} Les fonctions qui modifient la liste des clients, telles que \texttt{addClient} et \texttt{remove\_client}, sont protégées par des mutex. Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits et les incohérences.
-    \item \textbf{Comptage des clients actifs :} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
+\paragraph{Afin d'assurer le fonctionnement correct de notre messagerie, la gestion des accès concurrents s'est révélée être un défi crucial à surmonter pour assurer 
+l'intégrité des données partagées entre les différents threads et éviter leur corruption potentielle. Nous avons donc utilisé des mutexs pour synchroniser ces accès 
+concurrents aux ressources partagées, comme la liste des clients connectés. Soulignons ci-dessous certains exemples de leur utilisation dans notre projet:}
+\begin{itemize} % TODO -> CHANGER LES EXEMPLES EN EXEMPLE/FONCTION
+    \item \textbf{Protection de la liste des clients:} La liste des clients connectés est une ressource partagée entre les différents threads. Pour éviter les conditions de course et garantir la sécurité des données, 
+    nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter ou de supprimer un client de la liste, le thread doit verrouiller ce mutex. Une fois l'opération terminée, le mutex est déverrouillé.
+    \item \textbf{Fonctions critiques:} Les fonctions qui modifient la liste des clients, telles que \texttt{addClient} et \texttt{remove\_client}, sont protégées par des mutex. Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits et les incohérences.
+    \item \textbf{Comptage des clients actifs:} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
 \end{itemize}
 
 \subsection{Gestion des signaux}
 \paragraph{}
+
+\subsection{Script bash}
+\paragraph{L'aspect technique du script bash se trouve dans la redirection des entrées et sorties du programme chat. Nous avons d'abord opté un usage de la commande `exec'. Or celle-ci remplace le processus courant
+par le celui exécuté par la commande. Ceci ne correspondant donc pas à nos besoins, nous avons simplement opté pour l'opérateur `$|$', appelé `pipe operator', qui permet une redirection de la sortie standard d'une 
+commande vers l'entrée standard d'une autre commande. En utilisant la syntaxe suivante, ` \{ code \} $|$ ./chat', cela nous permet de rediriger l'IO du programme chat vers le code entre crochets qui s'occupe
+d'ajouter le pseudo de l'utilisateur devant le message envoyé et le retourner complété. \\
+En ce qui concerne la gestion des `ctrl-D', nous avons simplement opté pour deux boucles `while read -r'. En effet, si l'entrée standard est fermée, la boucle interne s'arrête et passe à la boucle externe qui
+redemande le pseudo de l'utilisateur.} % à compléter/rendre plus clair + vérifier si le bash fonctionne correctement
 
 \section{Difficultés Rencontrées et Solutions}
 \paragraph{}
 
 \section{Solutions Originales et Améliorations}
 \subsection{Gestion des constante globales}
-\paragraph{Lors de la création du projet, étant donné que nous avons choisit le C comme langage de programmation, il était interdit 
-d'utiliser de l'orienté objet et donc aucune constante dans les instanciations des objets. Le premier réflexe est donc de mettre
-"const \textless nom de la constante\textgreater  = "valeur" lorsque celle-ci ne doit pas être modifié et \textless nom de la constante\textgreater = "valeur" lorsqu'elle 
-peut l'être. Nous avons alors fait le choix de mettre tout les constante globales non modifiable sous la forme 
-"\#define \textless nom de la constante\textgreater \textless valeur\textgreater". Cela permet d'avoir une lisibilité accrue, et économiser de l'espace mémoire. Des
-problèmes de compatibilité entre types pourraient apparaître, certes, mais nous n'utilisons les constante globales que comme types simples comme int ou str, tout en
+\paragraph{Du fait de l'utilisation de C comme langage de programmation, l'orienté objet nous est inaccessible et nous n'avons donc pas accès aux constantes d'instances d'objets. 
+Le premier réflexe est donc de mettre `const \textless nom de la constante\textgreater= `valeur'' lorsque celle-ci ne doit pas être modifiée et `\textless nom de la 
+constante\textgreater = `valeur'' lorsqu'elle peut l'être. Cette méthode est tout à fait viable mais, malgré ça, nous avons utilisé une autre approche, à savoir mettre tout 
+les constante globales non modifiable sous la forme `\#define \textless nom de la constante\textgreater \textless valeur\textgreater'. L'avantage de cette approche est l'économie d'espace mémoire. 
+En effet, les variables globales déclarées de cette façon sont gérées par le préprocesseur qui remplace les occurences de cette variable dans le code avant la compilation et ne consomme pas d'espace en mémoire.
+Des problèmes de compatibilité entre types pourraient apparaître, certes, mais nous n'utilisons les constante globales que comme types simples comme `int' ou `str', tout en
 faisant attention à leur contexte d'utilisation, nous permettant ainsi d'éviter ces erreurs.}
 
 \section{Conclusion}
-\paragraph{Ce projet nous a permis de mettre en pratique et de se familiariser avec les concepts vus en cours d'OS,
-tels que les sockets, les signaux, les threads, et les mutex en C et de pratiquer le bash.
-Celui-ci, nous a appris à utiliser les outils de programmation en C comme sigaction, les fonctions relatives aux sockets telles que listen, bind,... .
-Ce projet nous a également permis de travailler à nouveau avec le même groupe que pour le premier projet, ce qui nous a permis de nous 
-améliorer avec ce même groupe, impliquant une évolution dans la gestion et répartition du travail.}
+\paragraph{
+Ce second et dernier projet de ce cours d'OS nous a permis d'approfondir nos connaissances concernant les threads, les signaux et le bash déjà utilisés dans le cadre du premier. A ces concepts
+s'ajoutent des nouveaux comme les mutexs et les sockets et leurs fonctions relatives comme `listen', `bind' et autres, également étudiés en cours. De plus, notre groupe étant resté le même pour la
+réalisation de chacun de ces deux projets, nous avons pu réitérer l'expérience de travail ensemble, de répartition des tâches et tout autre chose liée de près ou de loin aux travaux à plusieurs 
+en nous basant sur notre modeste expérience lors du premier projet. Ceci nous a permis d'améliorer certains aspects, comme, notablement, la répartition de travail qui s'est faite de manière plus claire et plus
+efficace qu'à la première itération. \\
+En combinant les travaux pratiques, les cours théoriques et les deux projets de ce cours de systèmes d'exploitation, chaque membre de notre groupe a pu progresser tant sur le plan personnel que professionnel. 
+D'une part en apprenant de nombreux concepts liés aux OS, les appliquant et en les maitrisant et, d'autre part, en découvrant les divers aspects inhérents aux projets en groupes et en les intégrant 
+pour mieux s'adapter dans le monde professionnel à l'avenir!}
 
 
 
