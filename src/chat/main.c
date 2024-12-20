@@ -13,6 +13,7 @@
 #include "constants.h"
 #include <signal.h>
 
+// TODO: mettre le soulignement dans manuel mode
 
 typedef struct {
   size_t taille;
