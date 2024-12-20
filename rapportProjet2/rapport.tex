@@ -118,7 +118,10 @@ redemande le pseudo de l'utilisateur.} % à compléter/rendre plus clair + véri
 
 \section{Difficultés Rencontrées et Solutions}
 \subsection{Gestion des signaux dans client}
-\paragraph{}
+\paragraph{Notre plus grosse difficultées, fut que le contrôle D marchait sur Mac OS mais pas sur Linux. En effet, sur Mac OS, 
+le contrôle D est interprété et permet d'interrompre l'exection de la boucle de lecture et d'ecriture. Or, sur Linux, apres que 
+la boucle s'interrompe, la lecture se poursuivait indéfiniment. Pour résoudre ce problème, nous avons utilisé la fonction 
+shutdown() qui permet de bloquer toutes les tentatives de lecture du socket spécifié.}
 
 \section{Solutions Originales et Améliorations}
 \subsection{Gestion des constante globales}

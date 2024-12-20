@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  20 DEC 2024 19:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  20 DEC 2024 19:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -352,12 +352,12 @@ File: omscmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 LaTeX Font Info:    Font shape `OMS/cmr/bx/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 119.
  [3]
-LaTeX Font Info:    Trying to load font information for OML+cmr on input line 133.
+LaTeX Font Info:    Trying to load font information for OML+cmr on input line 136.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/bx/n' in size <10> not available
-(Font)              Font shape `OML/cmm/b/it' tried instead on input line 133.
+(Font)              Font shape `OML/cmm/b/it' tried instead on input line 136.
  [4] (./rapport.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
@@ -367,15 +367,15 @@ Package rerunfilecheck Info: File `rapport.out' has not changed.
 (rerunfilecheck)             Checksum: 8A4FFC4E47B88599506C11C5296DA0C5;2443.
  ) 
 Here is how much of TeX's memory you used:
- 11343 strings out of 474116
- 172820 string characters out of 5743682
- 1937187 words of memory out of 5000000
- 33529 multiletter control sequences out of 15000+600000
+ 11344 strings out of 474116
+ 172828 string characters out of 5743682
+ 1938187 words of memory out of 5000000
+ 33530 multiletter control sequences out of 15000+600000
  563008 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  63i,7n,67p,1521b,489s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on rapport.pdf (5 pages, 308379 bytes).
+Output written on rapport.pdf (5 pages, 308769 bytes).
 PDF statistics:
  161 PDF objects out of 1000 (max. 8388607)
  132 compressed objects within 2 object streams
