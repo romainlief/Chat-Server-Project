@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  20 DEC 2024 09:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.27)  20 DEC 2024 19:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -345,40 +345,40 @@ Overfull \hbox (23.78352pt too wide) in paragraph at lines 106--107
 []\OT1/cmr/bx/n/10 Fonctions cri-tiques: \OT1/cmr/m/n/10 Les fonc-tions qui mod-i-fient la liste des clients, telles que \OT1/cmtt/m/n/10 addClient \OT1/cmr/m/n/10 et \OT1/cmtt/m/n/10 remove[]client\OT1/cmr/m/n/10 ,
  []
 
-LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 121.
+LaTeX Font Info:    Trying to load font information for OMS+cmr on input line 119.
 (/usr/local/texlive/2024/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/bx/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 121.
+(Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 119.
  [3]
-LaTeX Font Info:    Trying to load font information for OML+cmr on input line 134.
+LaTeX Font Info:    Trying to load font information for OML+cmr on input line 133.
  (/usr/local/texlive/2024/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 2023/04/13 v2.5m Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/bx/n' in size <10> not available
-(Font)              Font shape `OML/cmm/b/it' tried instead on input line 134.
+(Font)              Font shape `OML/cmm/b/it' tried instead on input line 133.
  [4] (./rapport.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-02-20>
  ***********
 Package rerunfilecheck Info: File `rapport.out' has not changed.
-(rerunfilecheck)             Checksum: 3871F7DC342F627FE312393CA25F7DC1;2377.
+(rerunfilecheck)             Checksum: 8A4FFC4E47B88599506C11C5296DA0C5;2443.
  ) 
 Here is how much of TeX's memory you used:
- 11344 strings out of 474116
- 172831 string characters out of 5743682
+ 11343 strings out of 474116
+ 172820 string characters out of 5743682
  1937187 words of memory out of 5000000
  33529 multiletter control sequences out of 15000+600000
  563008 words of font info for 55 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  63i,7n,67p,1521b,489s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmib10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on rapport.pdf (5 pages, 308669 bytes).
+Output written on rapport.pdf (5 pages, 308379 bytes).
 PDF statistics:
- 163 PDF objects out of 1000 (max. 8388607)
- 134 compressed objects within 2 object streams
- 31 named destinations out of 1000 (max. 500000)
+ 161 PDF objects out of 1000 (max. 8388607)
+ 132 compressed objects within 2 object streams
+ 30 named destinations out of 1000 (max. 500000)
  110 words of extra memory for PDF output out of 10000 (max. 10000000)
 

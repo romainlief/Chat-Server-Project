@@ -116,7 +116,7 @@ void handle_message(char *buffer, const char *pseudo, int client_socket)
     if (destinataire == NULL)
     {
         char error_msg[MAX_LEN_MESSAGE];
-        snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
+        snprintf(error_msg, sizeof(error_msg), "Cette personne (%s) n'est pas connectée.\n", pseudo_receveur);
         checked((int)send(client_socket, error_msg, strlen(error_msg), 0), "send");
         return;
     }
