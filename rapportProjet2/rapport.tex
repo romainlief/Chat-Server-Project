@@ -107,8 +107,6 @@ concurrents aux ressources partagées, comme la liste des clients connectés. So
     \item \textbf{Comptage des clients actifs:} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
 \end{itemize}
 
-\subsection{Gestion des signaux}
-\paragraph{}
 
 \subsection{Script bash}
 \paragraph{L'aspect technique du script bash se trouve dans la redirection des entrées et sorties du programme chat. Nous avons d'abord opté un usage de la commande `exec'. Or celle-ci remplace le processus courant
@@ -119,6 +117,7 @@ En ce qui concerne la gestion des `ctrl-D', nous avons simplement opté pour deu
 redemande le pseudo de l'utilisateur.} % à compléter/rendre plus clair + vérifier si le bash fonctionne correctement
 
 \section{Difficultés Rencontrées et Solutions}
+\subsection{Gestion des signaux dans client}
 \paragraph{}
 
 \section{Solutions Originales et Améliorations}
