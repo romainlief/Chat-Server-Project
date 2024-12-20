@@ -70,8 +70,9 @@ int add_client_with_pseudo(int client_socket, char *pseudo);
  * @param buffer le message reçu
  * @param pseudo le pseudonyme du client
  * @param client_socket le descripteur du socket du client
+ * @param size_message la taille du message
  */
-void handle_message(char *buffer, const char *pseudo, int client_socket);
+void handle_message(char *buffer, const char *pseudo, int client_socket, ssize_t size_message);
 
 /**
  * @brief Gère le pseudonyme reçu d'un client

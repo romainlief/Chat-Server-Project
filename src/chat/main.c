@@ -74,7 +74,6 @@ liste_t create_mem() {
 
 char* popStr(liste_t* ls) {
   if (ls->taille == 0) {
-      printf("Memory is empty\n");
       return NULL;
   }
 
@@ -101,7 +100,6 @@ char* popStr(liste_t* ls) {
 
 char* retStr(char* mem) {
     if (mem == NULL || mem[0] == '\0') {
-        printf("Memory is empty\n");
         return NULL;
     }
     return mem;
@@ -112,7 +110,6 @@ int addStr(liste_t* ls, const char* str) {
     size_t str_len = strlen(str);
 
     if (ls->taille + str_len + 1 >= BUFFER_SIZE) {
-        printf("Memory is full\n");
         return -1;
     }
     
@@ -137,7 +134,6 @@ void * readerThread(void *arg){
    if(argv->options.affichageManuel){
       *memory = create_mem();
    }
-   printf("test\n");
    int code;
    while((read(*socket, buffer, sizeof(buffer))) > 0){
       
@@ -170,6 +166,7 @@ void * readerThread(void *arg){
             code = addStr(memory, buffer);
          }  
       }
+      memset(buffer, 0, sizeof(buffer));
    }
    msg = popStr(memory);
    while(msg != NULL){
@@ -276,7 +273,6 @@ int main(int argc, char* argv[]) {
    
    char* token ;
    
-   printf("ouverture\n");
    
    while((code = getline(&message, &size_mess, stdin))){
       if(code == -1){
@@ -300,7 +296,7 @@ int main(int argc, char* argv[]) {
             break;
          }
          free(verificateur);
-         printf("nonvalide\n");
+         printf("Message non valide\n");
          continue;
       }
 
@@ -310,6 +306,7 @@ int main(int argc, char* argv[]) {
 
       if (!options.modeBot) {
          printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
+         
          fflush(stdout);
       }
 
@@ -323,7 +320,9 @@ int main(int argc, char* argv[]) {
       }
       
       write(sock, temp, sizeof(temp));
+      printf("sizeoof : %ld\n", sizeof(temp));
    free(verificateur);
+   usleep(10000);
    }
    
    free(message);
