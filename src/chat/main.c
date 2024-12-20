@@ -186,7 +186,6 @@ void * readerThread(void *arg){
    
    kill(getpid(), SIGPIPE);
    // fclose(stdin);
-   printf("ici");
    return NULL;
 }
 
