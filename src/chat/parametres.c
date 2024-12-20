@@ -27,7 +27,6 @@ static void VerifierValiditePseudonymes(int argc, char* argv[]) {
 
    const char caracteresInterdits[] = { '/', '-', '[', ']' };
 
-   // for (int i = 1; i < 3; ++i) {
       for (unsigned int j = 0; j < sizeof(caracteresInterdits) / sizeof(*caracteresInterdits); ++j) {
          if (strchr(argv[1], caracteresInterdits[j]) != NULL) {
             fprintf(stderr, "Le caractère '%c' n'est pas autorisé dans un pseudonyme.\n", caracteresInterdits[j]);
@@ -40,7 +39,6 @@ static void VerifierValiditePseudonymes(int argc, char* argv[]) {
          exit(CODE_RETOUR_PSEUDO_CARACTERES_INVALIDES);
       }
    }
-// }
 
 static void ExtraireOptionsAdditionnelles(int argc, char* argv[], OptionsProgramme* options) {
    options->modeBot = false;

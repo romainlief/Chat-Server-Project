@@ -14,7 +14,11 @@
 
 
 #define BUFFER_SIZE 20
-
+#define MAX_LEN_PSEUDO 30
+#define BORNES_PORT_MAX 65535 
+#define BORNES_PORT_MIN 1
+#define MAX_LEN_MESSAGE 1024
+#define PORT_PAR_DEFAULT 1234 
 
 
 typedef struct {
@@ -25,7 +29,7 @@ typedef struct {
 typedef struct {
    int* socket;
    OptionsProgramme options;
-   char utilisateur[30]; 
+   char utilisateur[MAX_LEN_PSEUDO]; 
    liste_t* memoir;
 } Arguments;
 
@@ -40,27 +44,27 @@ int checkIP(){
    const char* delimiter = ".";
    char * ip = getenv(var_name);
 
-   int n_numbre = 0;
+   int n_number = 0;
 
    char * numbre_str = strtok(ip, delimiter);
    while(numbre_str != NULL){
 
       if(0 <= atoi(numbre_str) && atoi(numbre_str) < 256 ){
-         n_numbre ++;
+         n_number ++;
       }
 
       numbre_str = strtok(NULL, delimiter);
    }
 
 
-   return n_numbre == 4;
+   return n_number == 4;
 }
 
 int checkPort(){
    const char * var_name = "PORT_SERVEUR";
    char * port = getenv(var_name);
 
-   return( 0 < atoi(port) && atoi(port) <= 65535);
+   return( BORNES_PORT_MIN <= atoi(port) && atoi(port) <= BORNES_PORT_MAX);
    }
 
 liste_t create_mem() {
@@ -134,7 +138,7 @@ void * readerThread(void *arg){
    signal(SIGPIPE, pipe_closure);
    Arguments * argv = (Arguments *) arg;
    char* msg = NULL;
-   char buffer[1024];
+   char buffer[MAX_LEN_MESSAGE];
    int * socket = argv->socket;
    liste_t* memory = argv->memoir;
    if(argv->options.affichageManuel){
@@ -171,10 +175,8 @@ void * readerThread(void *arg){
                msg = popStr(memory);
             }
             code = addStr(memory, buffer);
-         }
-         
+         }  
       }
-
    }
    msg = popStr(memory);
    while(msg != NULL){
@@ -183,13 +185,9 @@ void * readerThread(void *arg){
       msg = popStr(memory);
    }
    
-   
    kill(getpid(), SIGPIPE);
-   // fclose(stdin);
    return NULL;
 }
-
-
 
 void ext(int sig){
    exit(4);
@@ -225,10 +223,7 @@ int main(int argc, char* argv[]) {
    setenv(IP_name, IP_value, 1);
 
 
-
-
-
-   int port = 1234;  // valeur defaut
+   int port = PORT_PAR_DEFAULT;  // valeur defaut
    char ip[] = "127.0.0.1";   // valeur defaut
    int sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -318,8 +313,7 @@ int main(int argc, char* argv[]) {
 
       char temp[size_mess];
       memcpy(temp, message, size_mess);
-
-      
+   
 
       if (!options.modeBot) {
          printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
