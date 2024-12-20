@@ -101,10 +101,14 @@ la fonction `handle\_client'. Cette approche possède divers avantages décrits 
 l'intégrité des données partagées entre les différents threads et éviter leur corruption potentielle. Nous avons donc utilisé des mutexs pour synchroniser ces accès 
 concurrents aux ressources partagées, comme la liste des clients connectés. Soulignons ci-dessous certains exemples de leur utilisation dans notre projet:}
 \begin{itemize} % TODO -> CHANGER LES EXEMPLES EN EXEMPLE/FONCTION
-    \item \textbf{Protection de la liste des clients:} La liste des clients connectés est une ressource partagée entre les différents threads. Pour éviter les conditions de course et garantir la sécurité des données, 
-    nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter ou de supprimer un client de la liste, le thread doit verrouiller ce mutex. Une fois l'opération terminée, le mutex est déverrouillé.
-    \item \textbf{Fonctions critiques:} Les fonctions qui modifient la liste des clients, telles que \texttt{addClient} et \texttt{remove\_client}, sont protégées par des mutex. Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits et les incohérences.
-    \item \textbf{Comptage des clients actifs:} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
+    \item \textbf{Protection de la liste des clients:} La liste des clients connectés est une ressource partagée entre les différents threads. 
+    Pour éviter les conditions de course et garantir la sécurité des données, nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter
+    ou de supprimer un client de la liste, le thread doit verrouiller ce mutex. Une fois l'opération terminée, le mutex est déverrouillé.
+    Par exemple, ces fonctions modifient la liste des clients avec les mutex: \texttt{addClient} et \texttt{remove\_client}.
+    Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits 
+    et les incohérences.
+    \item \textbf{Comptage des clients actifs:} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la 
+    liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
 \end{itemize}
 
 
@@ -148,6 +152,11 @@ les constante globales non modifiable sous la forme `\#define \textless nom de l
 En effet, les variables globales déclarées de cette façon sont gérées par le préprocesseur qui remplace les occurences de cette variable dans le code avant la compilation et ne consomme pas d'espace en mémoire.
 Des problèmes de compatibilité entre types pourraient apparaître, certes, mais nous n'utilisons les constante globales que comme types simples comme `int' ou `str', tout en
 faisant attention à leur contexte d'utilisation, nous permettant ainsi d'éviter ces erreurs.}
+
+\subsection{File d'attente}
+\paragraph{ Comme expliqué dans les consignes, le serveur doit être muni d'une file d'attente pour les clients qui se connectent lorsque le serveur est plein.
+Pour cela nous avons utilisé un atomic pour calculer le nombre de personnes dans la file d'attente. Ceux-ci, nous permettent de compter les clients dans la boucle d'attente sans les compter plusieurs fois.
+De plus, cela nous permet de facilement reconnecter un cleint en attente a la place d'un autre client qui vient de se déconnecter.}
 
 \section{Conclusion}
 \paragraph{
