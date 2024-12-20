@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 #define BUFFER_SIZE 20
-#define MAX_LEN_PSEUDO 30
+#define MAX_LEN_PSEUDO 31
 #define BORNES_PORT_MAX 65535 
 #define BORNES_PORT_MIN 1
 #define MAX_LEN_MESSAGE 1024
