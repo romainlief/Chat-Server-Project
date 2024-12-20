@@ -56,6 +56,15 @@ int count_active_clients();
 void remove_client(int client_socket);
 
 /**
+ * @brief Ajoute un client avec un pseudonyme
+ *
+ * @param client_socket le descripteur du socket du client
+ * @param pseudo le pseudonyme du client
+ * @return int 0 si l'ajout a réussi, -1 sinon
+ */
+int add_client_with_pseudo(int client_socket, char *pseudo);
+
+/**
  * @brief Gère les messages reçus d'un client
  *
  * @param client_socket le descripteur du socket du client

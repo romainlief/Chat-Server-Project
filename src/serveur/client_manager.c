@@ -1,6 +1,6 @@
 #include "client_manager.h"
 
-atomic_int client_count = 0; // nombre de clients dans la file d'attente
+atomic_int client_count = 0;          // nombre de clients dans la file d'attente
 extern pthread_mutex_t clients_mutex; // Mutex pour synchroniser l'accès au tableau des clients
 extern client_t clients[MAX_CLIENTS]; // Tableau des clients
 
@@ -72,13 +72,33 @@ void remove_client(int client_socket)
     checked(pthread_mutex_unlock(&clients_mutex), "pthread_mutex_unlock");
 }
 
+int add_client_with_pseudo(int client_socket, char *pseudo)
+{
+    struct sockaddr_in client_address;
+    socklen_t client_len = sizeof(client_address);
+    getpeername(client_socket, (struct sockaddr *)&client_address, &client_len);
+
+    client_count++;
+    while (addClient(client_socket, client_address, pseudo) == -1)
+    {
+        if (client_count >= MAX_CLIENTS)
+        {
+            close(client_socket);
+            client_count--;
+            return -1;
+        }
+        sleep(1);
+    }
+    client_count--;
+    return 0;
+}
+
 void handle_client(int client_socket)
 {
     char buffer[MAX_LEN_MESSAGE];
-    ssize_t bytes_read;
+    ssize_t bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
 
     // Récupérer le pseudonyme du client
-    bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
     if (bytes_read <= 0)
     {
         printf("Erreur ou déconnexion du client lors de l'envoi du pseudonyme.\n");
@@ -90,30 +110,10 @@ void handle_client(int client_socket)
     strncpy(pseudo, buffer, MAX_LEN_PSEUDO - 1);
     pseudo[MAX_LEN_PSEUDO - 1] = '\0';
 
-    // Ajouter le client avec son pseudonyme
-    struct sockaddr_in client_address;
-    socklen_t client_len = sizeof(client_address);
-    getpeername(client_socket, (struct sockaddr *)&client_address, &client_len);
-
-    //while (count_active_clients() >= MAX_CLIENTS)
-    //{
-        //printf("client  actif : %d\n", count_active_clients());
-      //  sleep(1); 
-    //}
-
-    client_count++;
-    while (addClient(client_socket, client_address, pseudo) == -1)
+    if (add_client_with_pseudo(client_socket, pseudo) == -1)
     {
-        if (client_count >= MAX_CLIENTS)
-        {
-            close(client_socket);
-            client_count--;
-            return;
-        }
-        sleep(1); 
+        return;
     }
-    client_count--;
-
 
     printf("Client connecté avec le pseudo : %s\n", pseudo);
 
