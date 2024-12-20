@@ -65,6 +65,15 @@ void remove_client(int client_socket);
 int add_client_with_pseudo(int client_socket, char *pseudo);
 
 /**
+ * @brief Gère un message reçu d'un client
+ *
+ * @param buffer le message reçu
+ * @param pseudo le pseudonyme du client
+ * @param client_socket le descripteur du socket du client
+ */
+void handle_message(char *buffer, char *pseudo, int client_socket);
+
+/**
  * @brief Gère les messages reçus d'un client
  *
  * @param client_socket le descripteur du socket du client

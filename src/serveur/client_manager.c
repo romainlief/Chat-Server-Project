@@ -93,6 +93,36 @@ int add_client_with_pseudo(int client_socket, char *pseudo)
     return 0;
 }
 
+void handle_message(char *buffer, char *pseudo, int client_socket) {
+    // Extraire le pseudonyme du destinataire et le message
+    char *pseudo_receveur = strtok(buffer, " ");
+    if (pseudo_receveur == NULL) {
+        printf("Message invalide reçu de %s\n", pseudo);
+        return;
+    }
+    char *message = strtok(NULL, "\0");
+    if (message == NULL) {
+        printf("Message invalide reçu de %s\n", pseudo);
+        remove_client(client_socket);
+        return;
+    }
+    printf("message : %s\n", message);
+
+    // Trouver le client destinataire
+    client_t *destinataire = findClientByPseudo(pseudo_receveur);
+    if (destinataire == NULL) {
+        char error_msg[MAX_LEN_MESSAGE];
+        snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
+        checked(send(client_socket, error_msg, strlen(error_msg), 0), "send");
+        return;
+    }
+
+    // Envoyer le message au destinataire
+    char full_message[MAX_LEN_MESSAGE];
+    snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
+    checked(send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
+}
+
 void handle_client(int client_socket)
 {
     char buffer[MAX_LEN_MESSAGE];
@@ -130,37 +160,7 @@ void handle_client(int client_socket)
             return;
         }
 
-        // Extraire le pseudonyme du destinataire et le message
-
-        char *pseudo_receveur = strtok(buffer, " ");
-        if (pseudo_receveur == NULL)
-        {
-            printf("Message invalide reçu de %s\n", pseudo);
-            continue;
-        }
-        char *message = strtok(NULL, "\0");
-        if (message == NULL)
-        {
-            printf("Message invalide reçu de %s\n", pseudo);
-            remove_client(client_socket);
-            continue;
-        }
-        printf("message : %s\n", message);
-
-        // Trouver le client destinataire
-        client_t *destinataire = findClientByPseudo(pseudo_receveur);
-        if (destinataire == NULL)
-        {
-            char error_msg[MAX_LEN_MESSAGE];
-            snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
-            checked(send(client_socket, error_msg, strlen(error_msg), 0), "send");
-            continue;
-        }
-
-        // Envoyer le message au destinataire
-        char full_message[MAX_LEN_MESSAGE];
-        snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
-        checked(send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
+        handle_message(buffer, pseudo, client_socket);
     }
 
     printf("Client %s déconnecté\n", pseudo);
