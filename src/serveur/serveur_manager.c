@@ -2,7 +2,6 @@
 
 int server_fd; // Descripteur du socket du serveur
 
-
 void sigint_handler(int sig)
 {
     printf("SIGINT reçu: fermeture du serveur!\n");
@@ -29,7 +28,7 @@ int getServeurPort()
 
     if (port_env != NULL)
     {
-        for (int i = 0; port_env[i] != '\0'; i++) 
+        for (int i = 0; port_env[i] != '\0'; i++)
         {
             if (!isdigit(port_env[i]))
             {
@@ -76,13 +75,11 @@ int initServeur(int port)
 
 void run_server(int server_socket)
 {
-    sigaction_setup(); 
+    sigaction_setup();
     while (1)
     {
         struct sockaddr_in client_address;
         socklen_t client_len = sizeof(client_address);
-
-        
         int valide = 1;
         int *new_client_socket = malloc(sizeof(int));
         if (new_client_socket == NULL)
@@ -91,13 +88,8 @@ void run_server(int server_socket)
             continue;
         }
 
-        // Vérifier si le nombre de connexions atteint la limite
-
-        // sleep(1); // Attendre avant de réessayer 
-        // continue;
-
-        if(valide){
-            
+        if (valide)
+        {
             *new_client_socket = checked(accept(server_socket, (struct sockaddr *)&client_address, &client_len), "accept");
             if (*new_client_socket < 0)
             {
@@ -106,10 +98,6 @@ void run_server(int server_socket)
                 continue;
             }
         }
-        
-    
-
-        // printf("Nouvelle connexion acceptée.\n");
 
         // Créer un thread pour gérer le client
         pthread_t thread_id;
@@ -120,6 +108,5 @@ void run_server(int server_socket)
             free(new_client_socket);
         }
         pthread_detach(thread_id); // Détacher le thread pour éviter les fuites de ressources
-    
     }
 }

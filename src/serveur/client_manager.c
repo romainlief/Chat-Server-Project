@@ -83,7 +83,7 @@ int add_client_with_pseudo(int client_socket, char *pseudo)
     {
         if (client_count >= MAX_CLIENTS)
         {
-            close(client_socket);
+            checked(close(client_socket), "close");
             client_count--;
             return -1;
         }
@@ -125,7 +125,7 @@ void handle_client(int client_socket)
         if (bytes_read > MAX_LEN_MESSAGE - 1)
         {
             printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
-            close(client_socket);
+            checked(close(client_socket), "close");
             remove_client(client_socket);
             return;
         }
@@ -153,14 +153,14 @@ void handle_client(int client_socket)
         {
             char error_msg[MAX_LEN_MESSAGE];
             snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
-            send(client_socket, error_msg, strlen(error_msg), 0);
+            checked(send(client_socket, error_msg, strlen(error_msg), 0), "send");
             continue;
         }
 
         // Envoyer le message au destinataire
         char full_message[MAX_LEN_MESSAGE];
         snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
-        send(destinataire->socket_fd, full_message, strlen(full_message), 0);
+        checked(send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
     }
 
     printf("Client %s déconnecté\n", pseudo);
