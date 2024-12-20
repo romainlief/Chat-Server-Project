@@ -104,7 +104,7 @@ void run_server(int server_socket)
         if (pthread_create(&thread_id, NULL, client_thread, new_client_socket) != 0)
         {
             perror("pthread_create");
-            close(*new_client_socket);
+            checked(close(*new_client_socket), "close");
             free(new_client_socket);
         }
         pthread_detach(thread_id); // Détacher le thread pour éviter les fuites de ressources
