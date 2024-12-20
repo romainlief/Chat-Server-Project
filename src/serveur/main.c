@@ -5,8 +5,7 @@ client_t clients[MAX_CLIENTS];
 
 int main(void)
 {
-    int port = getServeurPort();
-    int server_socket = initServeur(port);
+    int server_socket = initServeur();
 
     run_server(server_socket);
 

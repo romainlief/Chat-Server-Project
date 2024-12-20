@@ -51,8 +51,9 @@ int getServeurPort()
     return port;
 }
 
-int initServeur(int port)
+int initServeur()
 {
+    int port = getServeurPort();
     int opt = 1;
     struct sockaddr_in address;
 

@@ -41,7 +41,7 @@ int getServeurPort();
  * @param port le port du serveur
  * @return int le descripteur du socket du serveur
  */
-int initServeur(int port);
+int initServeur();
 
 /**
  * @brief Fonction principale du serveur
