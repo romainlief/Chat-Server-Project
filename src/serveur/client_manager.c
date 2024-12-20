@@ -106,9 +106,6 @@ void handle_client(int client_socket)
     {
         if (client_count >= MAX_CLIENTS)
         {
-            char error_msg[MAX_LEN_MESSAGE];
-            snprintf(error_msg, sizeof(error_msg), "Nombre maximum de clients atteint. Déconnexion du client.\n");
-            send(client_socket, error_msg, strlen(error_msg), 0);
             close(client_socket);
             client_count--;
             return;
