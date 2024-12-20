@@ -93,15 +93,18 @@ int add_client_with_pseudo(int client_socket, char *pseudo)
     return 0;
 }
 
-void handle_message(char *buffer, char *pseudo, int client_socket) {
+void handle_message(char *buffer, char *pseudo, int client_socket)
+{
     // Extraire le pseudonyme du destinataire et le message
     char *pseudo_receveur = strtok(buffer, " ");
-    if (pseudo_receveur == NULL) {
+    if (pseudo_receveur == NULL)
+    {
         printf("Message invalide reçu de %s\n", pseudo);
         return;
     }
     char *message = strtok(NULL, "\0");
-    if (message == NULL) {
+    if (message == NULL)
+    {
         printf("Message invalide reçu de %s\n", pseudo);
         remove_client(client_socket);
         return;
@@ -110,7 +113,8 @@ void handle_message(char *buffer, char *pseudo, int client_socket) {
 
     // Trouver le client destinataire
     client_t *destinataire = findClientByPseudo(pseudo_receveur);
-    if (destinataire == NULL) {
+    if (destinataire == NULL)
+    {
         char error_msg[MAX_LEN_MESSAGE];
         snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
         checked(send(client_socket, error_msg, strlen(error_msg), 0), "send");
@@ -123,31 +127,35 @@ void handle_message(char *buffer, char *pseudo, int client_socket) {
     checked(send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
 }
 
-void handle_client(int client_socket)
+int handle_pseudo(int client_socket, char *pseudo)
 {
     char buffer[MAX_LEN_MESSAGE];
     ssize_t bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
 
-    // Récupérer le pseudonyme du client
     if (bytes_read <= 0)
     {
         printf("Erreur ou déconnexion du client lors de l'envoi du pseudonyme.\n");
         remove_client(client_socket);
-        return;
+        return -1;
     }
     buffer[bytes_read] = '\0'; // Null-terminate
-    char pseudo[MAX_LEN_PSEUDO];
     strncpy(pseudo, buffer, MAX_LEN_PSEUDO - 1);
     pseudo[MAX_LEN_PSEUDO - 1] = '\0';
 
     if (add_client_with_pseudo(client_socket, pseudo) == -1)
     {
-        return;
+        return -1;
     }
 
     printf("Client connecté avec le pseudo : %s\n", pseudo);
+    return 0;
+}
 
-    // Boucle principale pour gérer les messages
+void main_message_loop(int client_socket, const char *pseudo)
+{
+    char buffer[MAX_LEN_MESSAGE];
+    ssize_t bytes_read;
+
     while ((bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0)) > 0)
     {
         buffer[bytes_read] = '\0'; // Null-terminate
@@ -165,6 +173,17 @@ void handle_client(int client_socket)
 
     printf("Client %s déconnecté\n", pseudo);
     remove_client(client_socket);
+}
+
+void handle_client(int client_socket)
+{
+    char pseudo[MAX_LEN_PSEUDO];
+
+    if (handle_pseudo(client_socket, pseudo) == -1)
+    {
+        return;
+    }
+    main_message_loop(client_socket, pseudo);
 }
 
 void *client_thread(void *arg)

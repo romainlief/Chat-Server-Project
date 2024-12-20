@@ -74,6 +74,23 @@ int add_client_with_pseudo(int client_socket, char *pseudo);
 void handle_message(char *buffer, char *pseudo, int client_socket);
 
 /**
+ * @brief Gère le pseudonyme reçu d'un client
+ * 
+ * @param client_socket le descripteur du socket du client
+ * @param pseudo le pseudonyme reçu
+ * @return int 
+ */
+int handle_pseudo(int client_socket, char *pseudo);
+
+/**
+ * @brief Boucle principale de gestion des messages d'un client
+ *
+ * @param client_socket le descripteur du socket du client
+ * @param pseudo le pseudonyme du client
+ */
+void main_message_loop(int client_socket, const char *pseudo);
+
+/**
  * @brief Gère les messages reçus d'un client
  *
  * @param client_socket le descripteur du socket du client
