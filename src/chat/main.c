@@ -10,15 +10,8 @@
 #include <unistd.h>
 
 #include "parametres.h"
+#include "constants.h"
 #include <signal.h>
-
-
-#define BUFFER_SIZE 20
-#define MAX_LEN_PSEUDO 30
-#define BORNES_PORT_MAX 65535 
-#define BORNES_PORT_MIN 1
-#define MAX_LEN_MESSAGE 1024
-#define PORT_PAR_DEFAULT 1234 
 
 
 typedef struct {

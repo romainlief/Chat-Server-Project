@@ -2,6 +2,10 @@
 #define PARAMETRES_H__
 
 #include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include "constants.h"
 
 #define MAX_PSEUDO_DESTINATAIRE 30
 
