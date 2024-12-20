@@ -327,7 +327,7 @@ int main(int argc, char* argv[]) {
    }
    
    free(message);
-     
+   shutdown(sock, SHUT_RD);
    // LibererMessageSuspendu(messageSuspendu);
    close(sock);
    pthread_join(second_thread, NULL);  
