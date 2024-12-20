@@ -123,6 +123,22 @@ le contrôle D est interprété et permet d'interrompre l'exection de la boucle 
 la boucle s'interrompe, la lecture se poursuivait indéfiniment. Pour résoudre ce problème, nous avons utilisé la fonction 
 shutdown() qui permet de bloquer toutes les tentatives de lecture du socket spécifié.}
 
+\subsection{Confusion dans les consignes}
+\paragraph{Les consignes du point 3.4 spécifiaient que nous devions effectuer la tache suivant: "Afin de connaître le
+destinataire du message écrit par l’utilisatrice ou utilisateur, chaque message sur stdin doit
+être précédé du pseudonyme de son destinataire. Si ce pseudonyme contient des espaces, ces
+espaces sont remplacées par des tirets (p.ex., le pseudo \textless chat chat\textgreater s’écrira \textless chat-chat\textgreater)". 
+Après une longue réflexion, cela nous a paru impossible. En effet, pour lancer le programme chat, 
+il a été spécifié que le 1er argument devrait être le pseudo et que les suivant sevaient obligatoirement 
+être bot et manuel. Dès lors, un utilisateur ne pourra jamais avoir un nom d'utilisateur contenant un espace. 
+Aussi, lorsqu'on écrit un message (après avoir lancé le programme) il nous a été demandé d'igniorer les messages 
+ne contenant pas au minimum 2 mots. Mais alors, il n'y a plus aucun moyen de vérifier que les 2 entrées sont un 
+seul et unique nom d'utilisateur ou bien un nom et un message ce qui ne permet plus de savoir si c'est une erreur 
+ou un message valide. Ou encore, si nous oublions ce dernier point, lorsque le programme cherchera a envoyer un message 
+au premier mot entré, et qu'il ne le trouvera pas, le serveur le signalera, alors que nous cherchions peut être a contacter 
+la combinaison des premiers mots. du message. Dès lors nous avons conclu que ces lignes portaient a confusion et nous avons 
+décidé d'en revenir a l'enoncé de base en laissant cette partie non-faite.}
+
 \section{Solutions Originales et Améliorations}
 \subsection{Gestion des constante globales}
 \paragraph{Du fait de l'utilisation de C comme langage de programmation, l'orienté objet nous est inaccessible et nous n'avons donc pas accès aux constantes d'instances d'objets. 
