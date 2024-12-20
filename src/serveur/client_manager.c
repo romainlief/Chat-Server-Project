@@ -93,7 +93,7 @@ int add_client_with_pseudo(int client_socket, char *pseudo)
     return 0;
 }
 
-void handle_message(char *buffer, char *pseudo, int client_socket)
+void handle_message(char *buffer, const char *pseudo, int client_socket)
 {
     // Extraire le pseudonyme du destinataire et le message
     char *pseudo_receveur = strtok(buffer, " ");
@@ -117,14 +117,14 @@ void handle_message(char *buffer, char *pseudo, int client_socket)
     {
         char error_msg[MAX_LEN_MESSAGE];
         snprintf(error_msg, sizeof(error_msg), "Le client '%s' n'est pas connecté.\n", pseudo_receveur);
-        checked(send(client_socket, error_msg, strlen(error_msg), 0), "send");
+        checked((int)send(client_socket, error_msg, strlen(error_msg), 0), "send");
         return;
     }
 
     // Envoyer le message au destinataire
     char full_message[MAX_LEN_MESSAGE];
     snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message);
-    checked(send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
+    checked((int)send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
 }
 
 int handle_pseudo(int client_socket, char *pseudo)
