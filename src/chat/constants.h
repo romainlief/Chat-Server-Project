@@ -1,7 +1,7 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
-#define BUFFER_SIZE 20
+#define BUFFER_SIZE 4096
 #define MAX_LEN_PSEUDO 31
 #define BORNES_PORT_MAX 65535 
 #define BORNES_PORT_MIN 1
