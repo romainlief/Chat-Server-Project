@@ -161,7 +161,6 @@ void main_message_loop(int client_socket, const char *pseudo)
         if (bytes_read > MAX_LEN_MESSAGE - 1)
         {
             printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
-            checked(close(client_socket), "close");
             remove_client(client_socket);
             return;
         }
@@ -183,6 +182,7 @@ void handle_client(int client_socket)
         return;
     }
     main_message_loop(client_socket, pseudo);
+    printf("la bas");
 }
 
 void *client_thread(void *arg)
