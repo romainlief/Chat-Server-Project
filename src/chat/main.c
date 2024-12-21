@@ -52,14 +52,14 @@ int main(int argc, char *argv[])
       exit(1);
    }
 
-   if (!options.affichageManuel)
+   if (!options.affichageManuel)  // Igniorer SIGINT si pas de Manuel Mod
    { // igniore signint
       sigset_t set;
       sigemptyset(&set);
       sigaddset(&set, SIGINT);
       pthread_sigmask(SIG_BLOCK, &set, NULL);
    }
-   else
+   else  // Si Manuel mod, SIGINT vide la mémoire
    {
       signal(SIGINT, set_vider);
    }
@@ -69,22 +69,22 @@ int main(int argc, char *argv[])
    argument.options = options;
    argument.memoir = &memoire;
    strcpy(argument.utilisateur, argv[1]);
-   send(sock, argument.utilisateur, strlen(argument.utilisateur), 0);
+   send(sock, argument.utilisateur, strlen(argument.utilisateur), 0); // envoie du nom d'utilisateur sur le socket
 
    char *message = NULL;
    size_t size_mess = 0;
    ssize_t code;
 
    pthread_t second_thread;
-   pthread_create(&second_thread, NULL, &readerThread, &argument);
+   pthread_create(&second_thread, NULL, &readerThread, &argument); //creation thread lecture
 
    char *token;
 
-   while ((code = getline(&message, &size_mess, stdin)))
-   {
+   while ((code = getline(&message, &size_mess, stdin))) 
       if (code == -1)
       {
-         break;
+         break; // tant que stdin est ouvert on peut écrire
+   {
       }
 
       int spacecounter = 0;
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
          idx++;
       }
 
-      char *verificateur = strdup(message);
+      char *verificateur = strdup(message);  // verification de message valide: 2 mots min
       token = strtok(verificateur, " ");
       token = strtok(NULL, " ");
       if (token == NULL || strcmp(token, "\n") == 0 || spacecounter > 0)
@@ -124,12 +124,12 @@ int main(int argc, char *argv[])
       if (options.affichageManuel)
       {
          char *msg = popStr(&memoire);
-         while (msg != NULL)
+         while (msg != NULL) // vidage mémoire 
          {
-            if(options.modeBot){
+            if(options.modeBot){ // ecriture message sans soulignement
             printf("%s", msg);
             }
-            else{
+            else{    // ecriture message avec soulignement
                char *separators = "[]";
                char *tok = strtok(msg, separators);
                printf("[\x1B[4m%s\x1B[0m]", tok);
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
    }
 
    free(message);
-   shutdown(sock, SHUT_RD);
+   shutdown(sock, SHUT_RD); // fermeture de lecture du socket permettant au thread lecture de se terminer
    close(sock);
    pthread_join(second_thread, NULL);
    return 0;

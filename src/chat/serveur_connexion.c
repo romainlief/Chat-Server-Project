@@ -13,7 +13,7 @@ int checkIP()
     while (numbre_str != NULL)
     {
 
-        if (0 <= atoi(numbre_str) && atoi(numbre_str) < 256)
+        if (0 <= atoi(numbre_str) && atoi(numbre_str) < 256)  // verifie nombre valide
         {
             n_number++;
         }
@@ -21,7 +21,7 @@ int checkIP()
         numbre_str = strtok(NULL, delimiter);
     }
 
-    return n_number == 4;
+    return n_number == 4; // si 4 nombre valides, return 1
 }
 
 int checkPort()
