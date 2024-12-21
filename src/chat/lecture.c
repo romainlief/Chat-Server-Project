@@ -2,6 +2,8 @@
 
 void *readerThread(void *arg)
 {
+   pthread_mutex_t mutex;
+   pthread_mutex_init(&mutex, NULL);
    signal(SIGPIPE, pipe_closure);
    Arguments *argv = (Arguments *)arg;
    char *msg = NULL;
@@ -15,7 +17,7 @@ void *readerThread(void *arg)
    int code;
    while ((read(*socket, buffer, sizeof(buffer))) > 0)
    {
-
+      pthread_mutex_lock(&mutex);
       if (!argv->options.affichageManuel)
       {
          if (argv->options.modeBot)
@@ -61,6 +63,7 @@ void *readerThread(void *arg)
          }
       }
       memset(buffer, 0, sizeof(buffer));
+      pthread_mutex_unlock(&mutex);
    }
    msg = popStr(memory);
    while (msg != NULL)
