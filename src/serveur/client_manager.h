@@ -13,6 +13,10 @@
 #include "constants.h"
 #include "error_handler.h"
 
+/**
+ * @brief Structure représentant un client
+ * 
+ */
 typedef struct
 {
     int socket_fd;               // Descripteur du socket du client
