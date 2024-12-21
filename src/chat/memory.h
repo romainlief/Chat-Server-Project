@@ -12,7 +12,7 @@
 liste_t create_mem();
 
 /**
- * @brief
+ * @brief Permet d'extraire le premier string
  */
 char *popStr(liste_t *ls);
 
