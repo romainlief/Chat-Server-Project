@@ -7,10 +7,10 @@
 // TODO: mettre le soulignement dans manuel mode
 
 extern liste_t memoire;
-
+extern OptionsProgramme options;
 int main(int argc, char *argv[])
 {
-   OptionsProgramme options;
+   
    GererParameteres(argc, argv, &options);
 
    signal(SIGINT, ext); // exit 4 si SIGINT
@@ -126,7 +126,16 @@ int main(int argc, char *argv[])
          char *msg = popStr(&memoire);
          while (msg != NULL)
          {
+            if(options.modeBot){
             printf("%s", msg);
+            }
+            else{
+               char *separators = "[]";
+               char *tok = strtok(msg, separators);
+               printf("[\x1B[4m%s\x1B[0m]", tok);
+               tok = strtok(NULL, "");
+               printf("%s", tok);
+            }
             free(msg);
             msg = popStr(&memoire);
          }

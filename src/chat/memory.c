@@ -1,6 +1,7 @@
 #include "memory.h"
 
 liste_t memoire;
+OptionsProgramme options;
 
 liste_t create_mem()
 {
@@ -74,7 +75,16 @@ void set_vider(int sig)
    char *msg = popStr(&memoire);
    while (msg != NULL)
    {
-      printf("%s", msg);
+      if(options.modeBot){
+         printf("%s", msg);
+      }
+      else{
+         char *separators = "[]";
+         char *tok = strtok(msg, separators);
+         printf("[\x1B[4m%s\x1B[0m]", tok);
+         tok = strtok(NULL, "");
+         printf("%s", tok);
+      }
       free(msg);
       msg = popStr(&memoire);
    }
