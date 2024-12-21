@@ -115,15 +115,17 @@ void handle_message(char *buffer, const char *pseudo, int client_socket, ssize_t
     client_t *destinataire = findClientByPseudo(pseudo_receveur);
     if (destinataire == NULL)
     {
-        char error_msg[MAX_LEN_MESSAGE];
+        char error_msg[MAX_LEN_MESSAGE + 1];
         snprintf(error_msg, sizeof(error_msg), "Cette personne (%s) n'est pas connectée.\n", pseudo_receveur);
         checked((int)send(client_socket, error_msg, strlen(error_msg), 0), "send");
         return;
     }
 
     // Envoyer le message au destinataire
-    char full_message[MAX_LEN_MESSAGE];
-    sprintf(full_message, "[%s] %s", pseudo, message2);    
+    char full_message[MAX_LEN_MESSAGE + 1];
+    printf("lol\n");
+    snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message2);    
+    printf("lolll\n");
     checked((int)send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
     memset(message2, 0, sizeof(message2));
 
@@ -131,7 +133,7 @@ void handle_message(char *buffer, const char *pseudo, int client_socket, ssize_t
 
 int handle_pseudo(int client_socket, char *pseudo)
 {
-    char buffer[MAX_LEN_MESSAGE];
+    char buffer[MAX_LEN_MESSAGE + 1];
     ssize_t bytes_read = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
 
     if (bytes_read <= 0)
@@ -153,12 +155,14 @@ int handle_pseudo(int client_socket, char *pseudo)
 
 void main_message_loop(int client_socket, const char *pseudo)
 {
-    char buffer[MAX_LEN_MESSAGE];
+    char buffer[MAX_LEN_MESSAGE + 1];
     ssize_t bytes_read;
-
+    
     while ((bytes_read = recv(client_socket, buffer, sizeof(buffer), 0)) > 0)
     {
-        if (bytes_read > MAX_LEN_MESSAGE - 1)
+        printf("bytes_read: %ld\n", bytes_read);
+        printf("size of buffer: %ld\n", sizeof(buffer));
+        if (bytes_read > MAX_LEN_MESSAGE + 1)
         {
             printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
             remove_client(client_socket);
@@ -182,7 +186,6 @@ void handle_client(int client_socket)
         return;
     }
     main_message_loop(client_socket, pseudo);
-    printf("la bas");
 }
 
 void *client_thread(void *arg)
