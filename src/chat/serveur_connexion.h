@@ -17,8 +17,18 @@
 
 #include "struct.h"
 
+/**
+ * @brief Verfier que l'adresse IP a une forme valide
+ * 
+ * @return 1 si valide, 0 si non
+ */
 int checkIP();
 
+/**
+ * @brief Verifie que le port est un nombre valide
+ * 
+ * @return 1 si valide, 0 si non
+ */
 int checkPort();
 
 

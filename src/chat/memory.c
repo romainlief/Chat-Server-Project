@@ -45,14 +45,14 @@ char *popStr(liste_t *ls)
    return retStr;
 }
 
-char *retStr(char *mem)
-{
-   if (mem == NULL || mem[0] == '\0')
-   {
-      return NULL;
-   }
-   return mem;
-}
+// char *retStr(char *mem)
+// {
+//    if (mem == NULL || mem[0] == '\0')
+//    {
+//       return NULL;
+//    }
+//    return mem;
+// }
 
 int addStr(liste_t *ls, const char *str)
 {

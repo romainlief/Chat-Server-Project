@@ -9,8 +9,14 @@
 #include <pthread.h>
 #include <unistd.h>
 
+/**
+ * @brief Fermeture du stdin en cas de SIGPIPE
+ */
 void pipe_closure(int sig);
 
+/**
+ * @brief exit(4) en cas de SIGINT prématuré
+ */
 void ext(int sig);
 
 #endif // SIGNAUX_H
