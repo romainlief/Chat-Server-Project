@@ -158,8 +158,6 @@ void main_message_loop(int client_socket, const char *pseudo)
     
     while ((bytes_read = recv(client_socket, buffer, sizeof(buffer), 0)) > 0)
     {
-        printf("bytes_read: %ld\n", bytes_read);
-        printf("size of buffer: %ld\n", sizeof(buffer));
         if (bytes_read > MAX_LEN_MESSAGE + 1)
         {
             printf("Message trop long reçu de %s. Déconnexion du client.\n", pseudo);
