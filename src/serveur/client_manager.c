@@ -123,9 +123,7 @@ void handle_message(char *buffer, const char *pseudo, int client_socket, ssize_t
 
     // Envoyer le message au destinataire
     char full_message[MAX_LEN_MESSAGE + 1];
-    printf("lol\n");
     snprintf(full_message, sizeof(full_message), "[%s] %s", pseudo, message2);    
-    printf("lolll\n");
     checked((int)send(destinataire->socket_fd, full_message, strlen(full_message), 0), "send");
     memset(message2, 0, sizeof(message2));
 
