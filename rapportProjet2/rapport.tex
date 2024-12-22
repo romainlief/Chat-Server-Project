@@ -100,50 +100,44 @@ la fonction `handle\_client'. Cette approche possède divers avantages décrits 
 \paragraph{Afin d'assurer le fonctionnement correct de notre messagerie, la gestion des accès concurrents s'est révélée être un défi crucial à surmonter pour assurer 
 l'intégrité des données partagées entre les différents threads et éviter leur corruption potentielle. Nous avons donc utilisé des mutexs pour synchroniser ces accès 
 concurrents aux ressources partagées, comme la liste des clients connectés. Soulignons ci-dessous certains exemples de leur utilisation dans notre projet:}
-\begin{itemize} % TODO -> CHANGER LES EXEMPLES EN EXEMPLE/FONCTION
+\begin{itemize}
     \item \textbf{Protection de la liste des clients:} La liste des clients connectés est une ressource partagée entre les différents threads. 
     Pour éviter les conditions de course et garantir la sécurité des données, nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter
     ou de supprimer un client de la liste, le thread doit verrouiller ce mutex. Une fois l'opération terminée, le mutex est déverrouillé.
     Par exemple, ces fonctions modifient la liste des clients avec les mutex: \texttt{addClient} et \texttt{remove\_client}.
-    Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits 
-    et les incohérences.
+    Cela garantit que ces fonctions ne peuvent pas être exécutées simultanément par plusieurs threads, évitant ainsi les conflits et les incohérences.
     \item \textbf{Comptage des clients actifs:} Pour compter le nombre de clients actifs, nous avons également utilisé un mutex pour protéger l'accès à la 
     liste des clients. Cela garantit que le comptage est précis et que la liste n'est pas modifiée pendant l'opération.
-    \item \textbf{Impressions des messages:} L'utilisation de mutex était égallement indispensable afin de s'assurer que les messages reçus par un client s'affichent de manière efficace et claire en évitant 
-    les problèmes de concurence. Sans cela, les différentes écritures se seraient chevauché, rendant le résultat final illisible. 
+    \item \textbf{Impressions des messages:} L'utilisation de mutex est également indispensable afin de s'assurer que les messages reçus par un client s'affichent de manière efficace et claire en évitant 
+    les problèmes de concurence. Sans cela, les différentes écritures se chevaucheraient, rendant le résultat final illisible.
 \end{itemize}
 
 
 \subsection{Script bash}
-\paragraph{L'aspect technique du script bash se trouve dans la redirection des entrées et sorties du programme chat. Nous avons d'abord opté un usage de la commande `exec'. Or celle-ci remplace le processus courant
+\paragraph{L'aspect technique du script bash se trouve dans la redirection des entrées et sorties du programme chat. Nous avons d'abord opté pour un usage de la commande `exec'. Or celle-ci remplace le processus courant
 par le celui exécuté par la commande. Ceci ne correspondant donc pas à nos besoins, nous avons simplement opté pour l'opérateur `$|$', appelé `pipe operator', qui permet une redirection de la sortie standard d'une 
-commande vers l'entrée standard d'une autre commande. En utilisant la syntaxe suivante, ` \{ code \} $|$ ./chat', cela nous permet de rediriger l'IO du programme chat vers le code entre crochets qui s'occupe
-d'ajouter le pseudo de l'utilisateur devant le message envoyé et le retourner complété. \\
+commande vers l'entrée standard d'une autre commande. En utilisant la syntaxe suivante, ` \{ code \} $|$ ./chat \$utilisateur', cela nous permet, d'une part, de lancer le programme chat avec l'argument `utilisateur' et,
+d'autre part, de rediriger l'IO de ce programme vers le code entre crochets qui s'occupe d'ajouter le pseudo de l'utilisateur devant le message envoyé et le retourner complété. \\
 En ce qui concerne la gestion des `ctrl-D', nous avons simplement opté pour deux boucles `while read -r'. En effet, si l'entrée standard est fermée, la boucle interne s'arrête et passe à la boucle externe qui
-redemande le pseudo de l'utilisateur.} % à compléter/rendre plus clair + vérifier si le bash fonctionne correctement
+redemande un pseudo de l'utilisateur.}
 
 \section{Difficultés Rencontrées et Solutions}
 \subsection{Gestion des signaux dans client}
-\paragraph{Notre plus grosse difficultées, fut que le contrôle D marchait sur Mac OS mais pas sur Linux. En effet, sur Mac OS, 
-le contrôle D est interprété et permet d'interrompre l'exection de la boucle de lecture et d'ecriture. Or, sur Linux, apres que 
-la boucle s'interrompe, la lecture se poursuivait indéfiniment. Pour résoudre ce problème, nous avons utilisé la fonction 
-shutdown() qui permet de bloquer toutes les tentatives de lecture du socket spécifié.}
+\paragraph{La plus grosse difficulté que nous ayons rencontré est la gestion du `ctrl-D' en fonction des plateformes. En effet, le signal fonctionnait sans soucis sur Mac OS (dans le cas de notre code) 
+mais nous nous sommes vite rendu compte que ce n'était pas le cas sur Linux. Autrement dit, sur Mac OS, le `ctrl-D' était interprété selon nos attentes et permettait d'interrompre l'exécution de la 
+boucle de lecture et d'écriture. Or, sur Linux, suite à l'arrêt de la boucle, la lecture se poursuivait indéfiniment. Pour résoudre ce problème, nous avons donc utilisé la fonction 
+`shutdown()' qui permet de bloquer toutes les tentatives de lecture du socket spécifié.}
 
 \subsection{Confusion dans les consignes}
-\paragraph{Les consignes du point 3.4 spécifiaient que nous devions effectuer la tache suivant: "Afin de connaître le
-destinataire du message écrit par l’utilisatrice ou utilisateur, chaque message sur stdin doit
-être précédé du pseudonyme de son destinataire. Si ce pseudonyme contient des espaces, ces
-espaces sont remplacées par des tirets (p.ex., le pseudo \textless chat chat\textgreater s’écrira \textless chat-chat\textgreater)". 
-Après une longue réflexion, cela nous a paru impossible. En effet, pour lancer le programme chat, 
-il a été spécifié que le 1er argument devrait être le pseudo et que les suivant sevaient obligatoirement 
-être bot et manuel. Dès lors, un utilisateur ne pourra jamais avoir un nom d'utilisateur contenant un espace. 
-Aussi, lorsqu'on écrit un message (après avoir lancé le programme) il nous a été demandé d'igniorer les messages 
-ne contenant pas au minimum 2 mots. Mais alors, il n'y a plus aucun moyen de vérifier que les 2 entrées sont un 
-seul et unique nom d'utilisateur ou bien un nom et un message ce qui ne permet plus de savoir si c'est une erreur 
-ou un message valide. Ou encore, si nous oublions ce dernier point, lorsque le programme cherchera a envoyer un message 
-au premier mot entré, et qu'il ne le trouvera pas, le serveur le signalera, alors que nous cherchions peut être a contacter 
-la combinaison des premiers mots. du message. Dès lors nous avons conclu que ces lignes portaient a confusion et nous avons 
-décidé d'en revenir a l'enoncé de base en laissant cette partie non-faite.}
+\paragraph{Les consignes du point 3.4 spécifient la tâche suivante: \\
+"Afin de connaître le destinataire du message écrit par l'utilisatrice ou utilisateur, chaque message sur stdin doit être précédé du pseudonyme de son destinataire. Si ce pseudonyme contient des espaces, ces
+espaces sont remplacées par des tirets (p.ex., le pseudo \textless chat chat\textgreater s'écrira \textless chat-chat\textgreater)." \\
+Après longue réflexion, cela nous est apparu comme étant impossible. En effet, pour lancer le programme chat, il est spécifié que le 1er argument doit être le pseudo et que les suivants sont obligatoirement 
+`bot' et/ou `manuel'. De ce fait, il est impossible pour un utilisateur de faire usage d'un pseudo contenant un espace. Aussi, lors de l'écriture d'un message (une fois le programme lancé), il nous est demandé 
+d'ignorer les messages ne contenant pas au minimum 2 mots. Mais alors, il n'y a plus aucun moyen de vérifier que les 2 entrées sont composées d'un seul et unique nom d'utilisateur ou bien d'un nom et d'un 
+message ce qui ne permet plus de savoir si c'est une erreur ou un message valide. Ou encore, si nous oublions ce dernier point, lorsque le programme cherche a envoyer un message au premier mot entré, 
+et qu'il ne le trouve pas, le serveur le signale, alors que nous cherchons peut être a contacter la combinaison des premiers mots du message. Dès lors nous avons conclu que ces lignes portaient 
+à confusion et nous avons décidé d'en revenir a l'énoncé de base en laissant cette partie non-faite.}
 
 \section{Solutions Originales et Améliorations}
 \subsection{Gestion des constante globales}
@@ -156,9 +150,9 @@ Des problèmes de compatibilité entre types pourraient apparaître, certes, mai
 faisant attention à leur contexte d'utilisation, nous permettant ainsi d'éviter ces erreurs.}
 
 \subsection{File d'attente}
-\paragraph{ Comme expliqué dans les consignes, le serveur doit être muni d'une file d'attente pour les clients qui se connectent lorsque le serveur est plein.
-Pour cela nous avons utilisé un atomic pour calculer le nombre de personnes dans la file d'attente. Ceux-ci, nous permettent de compter les clients dans la boucle d'attente sans les compter plusieurs fois.
-De plus, cela nous permet de facilement reconnecter un cleint en attente a la place d'un autre client qui vient de se déconnecter.}
+\paragraph{Comme décrit dans les consignes, le serveur doit être muni d'une file d'attente pour les clients qui se connectent lorsque le serveur est plein. Pour cela nous avons utilisé une 
+variable de type `atomic' pour calculer le nombre de personnes dans la file d'attente. Celle-ci nous permettent de compter les clients dans la boucle d'attente sans répétition.
+De plus, cela nous permet de facilement remplacer un client qui vient de se déconnecter par un client en attente.}
 
 \section{Conclusion}
 \paragraph{
