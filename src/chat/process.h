@@ -20,4 +20,13 @@
  */
 void process_message(char *message, size_t size_mess, int sock, OptionsProgramme options, Arguments argument);
 
+/**
+ * @brief Vérifie si le message est valide
+ * 
+ * @param message message
+ * @param size_mess taille du message
+ * @return int 1 si valide, 0 si non
+ */
+int is_valid_message(char *message, size_t size_mess);
+
 #endif // PROCESS_H

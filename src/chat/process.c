@@ -3,26 +3,32 @@
 extern liste_t memoire;
 extern OptionsProgramme options;
 
+int is_valid_message(char *message, size_t size_mess)
+{
+    int spacecounter = 0;
+    int idx = 0;
+
+    while (message[idx] == ' ')
+    {
+        spacecounter++;
+        idx++;
+    }
+
+    char *verificateur = strdup(message); // verification de message valide: 2 mots min
+    char *token = strtok(verificateur, " ");
+    token = strtok(NULL, " ");
+    int is_valid = !(token == NULL || strcmp(token, "\n") == 0 || spacecounter > 0);
+    free(verificateur);
+    return is_valid;
+}
+
 void process_message(char *message, size_t size_mess, int sock, OptionsProgramme options, Arguments argument)
 {
-   int spacecounter = 0;
-   int idx = 0;
-
-   while (message[idx] == ' ')
-   {
-      spacecounter++;
-      idx++;
-   }
-
-   char *verificateur = strdup(message); // verification de message valide: 2 mots min
-   char *token = strtok(verificateur, " ");
-   token = strtok(NULL, " ");
-   if (token == NULL || strcmp(token, "\n") == 0 || spacecounter > 0)
-   {
-      free(verificateur);
-      printf("Message non valide\n");
-      return;
-   }
+   if (!is_valid_message(message, size_mess))
+    {
+        printf("Message non valide\n");
+        return;
+    }
 
    char temp[size_mess];
    memcpy(temp, message, size_mess);
@@ -32,7 +38,6 @@ void process_message(char *message, size_t size_mess, int sock, OptionsProgramme
       printf("[\x1B[4m%s\x1B[0m] %s", argument.utilisateur, temp);
       fflush(stdout);
    }
-
    if (options.affichageManuel)
    {
       char *msg = popStr(&memoire);
@@ -54,7 +59,6 @@ void process_message(char *message, size_t size_mess, int sock, OptionsProgramme
          msg = popStr(&memoire);
       }
    }
-
    write(sock, temp, sizeof(temp));
-   free(verificateur);
 }
+

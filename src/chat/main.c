@@ -4,6 +4,7 @@
 #include "signaux.h"
 #include "lecture.h"
 #include "process.h"
+#include "struct.h"
 
 
 extern liste_t memoire;
@@ -11,9 +12,7 @@ extern OptionsProgramme options;
 
 int main(int argc, char *argv[])
 {
-
    GererParameteres(argc, argv, &options);
-
    signal(SIGINT, ext); // exit 4 si SIGINT
 
    const char *port_name = "PORT_SERVEUR";
