@@ -5,7 +5,7 @@ int server_fd; // Descripteur du socket du serveur
 void sigint_handler(int sig)
 {
     printf("SIGINT reçu: fermeture du serveur!\n");
-    close(server_fd);
+    checked(close(server_fd), "close");
     exit(0);
 }
 
@@ -47,7 +47,6 @@ int getServeurPort()
             fprintf(stderr, "Port hors bornes (1-65535), utilisation du port par défaut (%d)\n", PORT_PAR_DEFAULT);
         }
     }
-
     return port;
 }
 
