@@ -1,3 +1,3 @@
 #include "struct.h"
 
-liste_t memoire;
+liste_t memoir;
