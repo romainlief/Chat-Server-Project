@@ -80,11 +80,10 @@ int main(int argc, char *argv[])
 
    char *token;
 
-   while ((code = getline(&message, &size_mess, stdin))) 
+   while ((code = getline(&message, &size_mess, stdin))) {
       if (code == -1)
       {
          break; // tant que stdin est ouvert on peut écrire
-   {
       }
 
       int spacecounter = 0;
