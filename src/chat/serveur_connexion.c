@@ -20,7 +20,6 @@ int checkIP()
 
         numbre_str = strtok(NULL, delimiter);
     }
-
     return n_number == 4; // si 4 nombre valides, return 1
 }
 
@@ -32,3 +31,27 @@ int checkPort()
     return (BORNES_PORT_MIN <= atoi(port) && atoi(port) <= BORNES_PORT_MAX);
 }
 
+void init_chat(int *sock, struct sockaddr_in *serv_addr, const char *port_name, const char *IP_name)
+{
+    int port = PORT_PAR_DEFAULT; // valeur defaut
+    char ip[] = "127.0.0.1";     // valeur defaut
+    *sock = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (checkPort() == 1)
+    {
+        char *port_value_str = getenv(port_name);
+        port = atoi(port_value_str);
+    }
+
+    serv_addr->sin_family = AF_INET;
+    serv_addr->sin_port = htons(port);
+
+    if (checkIP() == 1)
+    {
+        inet_pton(AF_INET, getenv(IP_name), &serv_addr->sin_addr);
+    }
+    else
+    {
+        inet_pton(AF_INET, ip, &serv_addr->sin_addr);
+    }
+}

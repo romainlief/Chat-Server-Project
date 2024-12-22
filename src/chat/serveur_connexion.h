@@ -31,6 +31,14 @@ int checkIP();
  */
 int checkPort();
 
-
+/**
+ * @brief Initialise la connexion du serveur
+ * 
+ * @param sock Socket du serveur
+ * @param serv_addr Adresse du serveur
+ * @param port_name Nom de la variable d'environnement du port
+ * @param IP_name Nom de la variable d'environnement de l'adresse IP
+ */
+void init_chat(int *sock, struct sockaddr_in *serv_addr, const char *port_name, const char *IP_name);
 
 #endif // SERVEUR_CONNEXION_H

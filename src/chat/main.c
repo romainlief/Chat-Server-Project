@@ -10,6 +10,7 @@
 extern liste_t memoire;
 extern OptionsProgramme options;
 
+
 int main(int argc, char *argv[])
 {
    GererParameteres(argc, argv, &options);
@@ -23,28 +24,10 @@ int main(int argc, char *argv[])
    const char *IP_value = "127.0.0.1";
    setenv(IP_name, IP_value, 1);
 
-   int port = PORT_PAR_DEFAULT; // valeur defaut
-   char ip[] = "127.0.0.1";     // valeur defaut
-   int sock = socket(AF_INET, SOCK_STREAM, 0);
+   int sock;
+   struct sockaddr_in serv_addr;
+   init_chat(&sock, &serv_addr, port_name, IP_name);
 
-   if (checkPort() == 1)
-   {
-      char *port_value_str = getenv(port_name);
-      port = atoi(port_value_str);
-   }
-
-   struct sockaddr_in serv_addr = {
-       .sin_family = AF_INET,
-       .sin_port = htons(port)};
-
-   if (checkIP() == 1)
-   {
-      inet_pton(AF_INET, getenv(IP_name), &serv_addr.sin_addr);
-   }
-   else
-   {
-      inet_pton(AF_INET, ip, &serv_addr.sin_addr);
-   }
 
    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
    {
