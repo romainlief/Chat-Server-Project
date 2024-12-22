@@ -23,7 +23,7 @@
     
     % Titre en haut de la page
     \vspace*{1cm}
-    {\huge \bfseries Info F-201 : Projet d’OS 2\\
+    {\huge \bfseries Info F-201 : Projet d'OS 2\\
                     Rapport \par}
     
     % Espace vertical pour centrer le logo
@@ -55,27 +55,33 @@
 
 \section{Introduction}
 \subsection{Présentation du projet et contexte}
-\paragraph{Dans le cadre de notre cours, nous avons réalisé un second projet qui, en s'appuyant sur les bases établies par le premier, vise à implémenter une messagerie en ligne utilisant un serveur implémenté en C.
+Dans le cadre de notre cours, nous avons réalisé un second projet qui, en s'appuyant sur les bases établies par le premier, vise à implémenter une messagerie en ligne utilisant un serveur implémenté en C.
 Cette messagerie permet donc la communication entre deux clients utilisant des ordinateurs différents, grâce à des sockets qui gèrent la connexion en ligne. 
 Elle se compose de deux parties. La première est un programme `chat' s'occupant de, comme son nom l'indique, d'établir un système de chat entre le client et le serveur. La seconde 
 est un script bash faisant office de `chat-auto' facilitant l'utilisation du programme chat. \\
-Ce rapport décrit donc les choix d'implémentation, les difficultés rencontrées et les solutions mises en œuvre pour arriver à un résultat final satisfaisant nos attentes.}
+Ce rapport décrit donc les choix d'implémentation, les difficultés rencontrées et les solutions mises en œuvre pour arriver à un résultat final satisfaisant nos attentes.
 
 \subsection{Objectifs du projet}
-\paragraph{A l'image du précédent, l'objectif de ce second projet est de mettre en pratique les concepts vus en cours d'OS. Comme évoqué dans l'introduction, nous nous basons donc
+A l'image du précédent, l'objectif de ce second projet est de mettre en pratique les concepts vus en cours d'OS. Comme évoqué dans l'introduction, nous nous basons donc
 sur le premier projet. De ce fait, certains concepts comme les threads, la gestion des signaux et le bash sont une fois de plus utilisés. De nouveaux concepts s'ajoutent naturellement 
 au premiers, à savoir les sockets et les mutexs. \\
-Ce projet permet donc d'encore élargir notre éventail de compétences concernant les outils liés aux OS.}
+Ce projet permet donc d'encore élargir notre éventail de compétences concernant les outils liés aux OS.
 
-\section{Choix d’implémentation}
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{server.png}
+    \caption{Schéma provenant du TP6 du cours d'OS.}
+\end{figure}
+
+\section{Choix d'implémentation}
 \subsection{Choix du langage}
-\paragraph{Le choix du langage de programmation entre le C et le C++ s'est une fois de plus offert à nous. Le C tombait sous le sens pour deux raisons bien distinctes. 
+Le choix du langage de programmation entre le C et le C++ s'est une fois de plus offert à nous. Le C tombait sous le sens pour deux raisons bien distinctes. 
 La première étant simplement le fait que le C est le langage utilisé durant les séances d'exercices et les cours théoriques. Ensuite, nous avons réalisé le premier projet en C. \\
-Notre choix est donc une continuation logique de ces deux raisons.}
+Notre choix est donc une continuation logique de ces deux raisons.
 
 \subsection{Choix de la méthode de gestion des clients}
-\paragraph{Concernant la gestion des clients nous avons fait le choix de les gérer à l'aide de threads. Autrement dit, à chaque client, un thread différent est assigné qui exécute
-la fonction `handle\_client'. Cette approche possède divers avantages décrits ci-dessous:}
+Concernant la gestion des clients nous avons fait le choix de les gérer à l'aide de threads. Autrement dit, à chaque client, un thread différent est assigné qui exécute
+la fonction `handle\_client'. Cette approche possède divers avantages décrits ci-dessous:
 \begin{itemize}
     \item \textbf{Concurrence et Réactivité:} L'utilisation des threads et de mutex permet de traiter les requêtes des clients de manière concurrente. Un message envoyé par un client n'affecte pas les autres clients.
     \item \textbf{Fluidité du serveur:} Le serveur étant indépendant des clients, ceux-cis ne peuvent pas le bloquer à cause d'une erreur qui leur est inhérente. Ceci permet donc d'avoir un serveur fluide et réactif.
@@ -85,7 +91,7 @@ la fonction `handle\_client'. Cette approche possède divers avantages décrits 
     ce qui permet une gestion claire et dynamique des connexions.
 \end{itemize}
 
-\paragraph{Alternatives considérées:}
+Alternatives considérées:
 \begin{itemize}
     \item \textbf{Multiprocessing:} Remplacer les threads par des processus assignés à chaque client est certes une alternative, cependant, cette méthode consomme nettement plus de ressources. En effet, chaque 
     processus a son propre espace mémoire. Ceci nécessite donc une gestion de communication entre processus qui peut s'avérer plus complexe et moins efficace que celle entre threads.
@@ -94,12 +100,12 @@ la fonction `handle\_client'. Cette approche possède divers avantages décrits 
     pour la réalisation du projet et nos connaissances étant restreintes sur le sujet, nous ne nous sommes pas risqués a les utiliser.
 \end{itemize}
 
-\paragraph{En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, efficace et facile à maintenir, capable de gérer plusieurs clients simultanément.}
+En définitive, l'utilisation des threads nous a permis de créer un serveur fluide, efficace et facile à maintenir, capable de gérer plusieurs clients simultanément.
 
 \subsection{Gestion des accès concurrents}
-\paragraph{Afin d'assurer le fonctionnement correct de notre messagerie, la gestion des accès concurrents s'est révélée être un défi crucial à surmonter pour assurer 
+Afin d'assurer le fonctionnement correct de notre messagerie, la gestion des accès concurrents s'est révélée être un défi crucial à surmonter pour assurer 
 l'intégrité des données partagées entre les différents threads et éviter leur corruption potentielle. Nous avons donc utilisé des mutexs pour synchroniser ces accès 
-concurrents aux ressources partagées, comme la liste des clients connectés. Soulignons ci-dessous certains exemples de leur utilisation dans notre projet:}
+concurrents aux ressources partagées, comme la liste des clients connectés. Soulignons ci-dessous certains exemples de leur utilisation dans notre projet:
 \begin{itemize}
     \item \textbf{Protection de la liste des clients:} La liste des clients connectés est une ressource partagée entre les différents threads. 
     Pour éviter les conditions de course et garantir la sécurité des données, nous avons utilisé un mutex nommé \texttt{clients\_mutex}. Avant d'ajouter
@@ -112,24 +118,33 @@ concurrents aux ressources partagées, comme la liste des clients connectés. So
     les problèmes de concurence. Sans cela, les différentes écritures se chevaucheraient, rendant le résultat final illisible.
 \end{itemize}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{mutex.png}
+    \caption{Illustration des mutex; \href{https://codegym.cc/fr/groups/posts/fr.220.difference-entre-un-mutex-un-moniteur-et-un-semaphore}{source}.}
+\end{figure}
 
 \subsection{Script bash}
-\paragraph{L'aspect technique du script bash se trouve dans la redirection des entrées et sorties du programme chat. Nous avons d'abord opté pour un usage de la commande `exec'. Or celle-ci remplace le processus courant
+L'aspect technique du script bash se trouve dans la redirection des entrées et sorties du programme chat. Nous avons d'abord opté pour un usage de la commande `exec'. Or celle-ci remplace le processus courant
 par le celui exécuté par la commande. Ceci ne correspondant donc pas à nos besoins, nous avons simplement opté pour l'opérateur `$|$', appelé `pipe operator', qui permet une redirection de la sortie standard d'une 
 commande vers l'entrée standard d'une autre commande. En utilisant la syntaxe suivante, ` \{ code \} $|$ ./chat \$utilisateur', cela nous permet, d'une part, de lancer le programme chat avec l'argument `utilisateur' et,
 d'autre part, de rediriger l'IO de ce programme vers le code entre crochets qui s'occupe d'ajouter le pseudo de l'utilisateur devant le message envoyé et le retourner complété. \\
 En ce qui concerne la gestion des `ctrl-D', nous avons simplement opté pour deux boucles `while read -r'. En effet, si l'entrée standard est fermée, la boucle interne s'arrête et passe à la boucle externe qui
-redemande un pseudo de l'utilisateur.}
+redemande un pseudo de l'utilisateur.
+
+\subsection{Taille des messages}
+Dans les consignes, il est dit qu'un message ayant une taille supérieure à 1024 octets ne peut être envoyé. De plus, le serveur doit automatiquement déconnecter l'utilisateur ayant envoyé le message. 
+En conséquence, nous avons fait le choix de comprendre la taille du pseudo utilisateur dans ces 1024 octets limites.
 
 \section{Difficultés Rencontrées et Solutions}
 \subsection{Gestion des signaux dans client}
-\paragraph{La plus grosse difficulté que nous ayons rencontré est la gestion du `ctrl-D' en fonction des plateformes. En effet, le signal fonctionnait sans soucis sur Mac OS (dans le cas de notre code) 
+La plus grosse difficulté que nous ayons rencontré est la gestion du `ctrl-D' en fonction des plateformes. En effet, le signal fonctionnait sans soucis sur Mac OS (dans le cas de notre code) 
 mais nous nous sommes vite rendu compte que ce n'était pas le cas sur Linux. Autrement dit, sur Mac OS, le `ctrl-D' était interprété selon nos attentes et permettait d'interrompre l'exécution de la 
 boucle de lecture et d'écriture. Or, sur Linux, suite à l'arrêt de la boucle, la lecture se poursuivait indéfiniment. Pour résoudre ce problème, nous avons donc utilisé la fonction 
-`shutdown()' qui permet de bloquer toutes les tentatives de lecture du socket spécifié.}
+`shutdown()' qui permet de bloquer toutes les tentatives de lecture du socket spécifié.
 
 \subsection{Confusion dans les consignes}
-\paragraph{Les consignes du point 3.4 spécifient la tâche suivante: \\
+Les consignes du point 3.4 spécifient la tâche suivante: \\
 "Afin de connaître le destinataire du message écrit par l'utilisatrice ou utilisateur, chaque message sur stdin doit être précédé du pseudonyme de son destinataire. Si ce pseudonyme contient des espaces, ces
 espaces sont remplacées par des tirets (p.ex., le pseudo \textless chat chat\textgreater s'écrira \textless chat-chat\textgreater)." \\
 Après longue réflexion, cela nous est apparu comme étant impossible. En effet, pour lancer le programme chat, il est spécifié que le 1er argument doit être le pseudo et que les suivants sont obligatoirement 
@@ -137,25 +152,25 @@ Après longue réflexion, cela nous est apparu comme étant impossible. En effet
 d'ignorer les messages ne contenant pas au minimum 2 mots. Mais alors, il n'y a plus aucun moyen de vérifier que les 2 entrées sont composées d'un seul et unique nom d'utilisateur ou bien d'un nom et d'un 
 message ce qui ne permet plus de savoir si c'est une erreur ou un message valide. Ou encore, si nous oublions ce dernier point, lorsque le programme cherche a envoyer un message au premier mot entré, 
 et qu'il ne le trouve pas, le serveur le signale, alors que nous cherchons peut être a contacter la combinaison des premiers mots du message. Dès lors nous avons conclu que ces lignes portaient 
-à confusion et nous avons décidé d'en revenir a l'énoncé de base en laissant cette partie non-faite.}
+à confusion et nous avons décidé d'en revenir a l'énoncé de base en laissant cette partie non-faite.
 
 \section{Solutions Originales et Améliorations}
 \subsection{Gestion des constante globales}
-\paragraph{Du fait de l'utilisation de C comme langage de programmation, l'orienté objet nous est inaccessible et nous n'avons donc pas accès aux constantes d'instances d'objets. 
+Du fait de l'utilisation de C comme langage de programmation, l'orienté objet nous est inaccessible et nous n'avons donc pas accès aux constantes d'instances d'objets. 
 Le premier réflexe est donc de mettre `const \textless nom de la constante\textgreater= `valeur'' lorsque celle-ci ne doit pas être modifiée et `\textless nom de la 
 constante\textgreater = `valeur'' lorsqu'elle peut l'être. Cette méthode est tout à fait viable mais, malgré ça, nous avons utilisé une autre approche, à savoir mettre tout 
 les constante globales non modifiable sous la forme `\#define \textless nom de la constante\textgreater \textless valeur\textgreater'. L'avantage de cette approche est l'économie d'espace mémoire. 
 En effet, les variables globales déclarées de cette façon sont gérées par le préprocesseur qui remplace les occurences de cette variable dans le code avant la compilation et ne consomme pas d'espace en mémoire.
 Des problèmes de compatibilité entre types pourraient apparaître, certes, mais nous n'utilisons les constante globales que comme types simples comme `int' ou `str', tout en
-faisant attention à leur contexte d'utilisation, nous permettant ainsi d'éviter ces erreurs.}
+faisant attention à leur contexte d'utilisation, nous permettant ainsi d'éviter ces erreurs.
 
 \subsection{File d'attente}
-\paragraph{Comme décrit dans les consignes, le serveur doit être muni d'une file d'attente pour les clients qui se connectent lorsque le serveur est plein. Pour cela nous avons utilisé une 
+Comme décrit dans les consignes, le serveur doit être muni d'une file d'attente pour les clients qui se connectent lorsque le serveur est plein. Pour cela nous avons utilisé une 
 variable de type `atomic' pour calculer le nombre de personnes dans la file d'attente. Celle-ci nous permettent de compter les clients dans la boucle d'attente sans répétition.
-De plus, cela nous permet de facilement remplacer un client qui vient de se déconnecter par un client en attente.}
+De plus, cela nous permet de facilement remplacer un client qui vient de se déconnecter par un client en attente.
 
 \section{Conclusion}
-\paragraph{
+
 Ce second et dernier projet de ce cours d'OS nous a permis d'approfondir nos connaissances concernant les threads, les signaux et le bash déjà utilisés dans le cadre du premier. A ces concepts
 s'ajoutent des nouveaux comme les mutexs et les sockets et leurs fonctions relatives comme `listen', `bind' et autres, également étudiés en cours. De plus, notre groupe étant resté le même pour la
 réalisation de chacun de ces deux projets, nous avons pu réitérer l'expérience de travail ensemble, de répartition des tâches et tout autre chose liée de près ou de loin aux travaux à plusieurs 
@@ -163,7 +178,7 @@ en nous basant sur notre modeste expérience lors du premier projet. Ceci nous a
 efficace qu'à la première itération. \\
 En combinant les travaux pratiques, les cours théoriques et les deux projets de ce cours de systèmes d'exploitation, chaque membre de notre groupe a pu progresser tant sur le plan personnel que professionnel. 
 D'une part en apprenant de nombreux concepts liés aux OS, les appliquant et en les maitrisant et, d'autre part, en découvrant les divers aspects inhérents aux projets en groupes et en les intégrant 
-pour mieux s'adapter dans le monde professionnel à l'avenir!}
+pour mieux s'adapter dans le monde professionnel à l'avenir!
 
 
 
