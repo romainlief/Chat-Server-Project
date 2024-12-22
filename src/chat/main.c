@@ -1,67 +1,7 @@
-#include "parametres.h"
 #include "serveur_connexion.h"
-#include "memory.h"
-#include "signaux.h"
-#include "lecture.h"
-#include "process.h"
-#include "struct.h"
-
-extern liste_t memoire;
-extern OptionsProgramme options;
 
 int main(int argc, char *argv[])
 {
-   GererParameteres(argc, argv, &options);
-   signal(SIGINT, ext); // exit 4 si SIGINT
-
-   const char *port_name = "PORT_SERVEUR";
-   const char *port_value = "1234";
-   const char *IP_name = "IP_SERVEUR";
-   const char *IP_value = "127.0.0.1";
-
-   set_env_variables(port_name, port_value, IP_name, IP_value);
-
-   int sock;
-   struct sockaddr_in serv_addr;
-   setup_and_connect_socket(&sock, &serv_addr, port_name, IP_name);
-
-   if (!options.affichageManuel) // Igniorer SIGINT si pas de Manuel Mod
-   {                             // igniore signint
-      sigset_t set;
-      sigemptyset(&set);
-      sigaddset(&set, SIGINT);
-      pthread_sigmask(SIG_BLOCK, &set, NULL);
-   }
-   else // Si Manuel mod, SIGINT vide la mémoire
-   {
-      signal(SIGINT, set_vider);
-   }
-
-   Arguments argument;
-   argument.socket = &sock;
-   argument.options = options;
-   argument.memoir = &memoire;
-   strcpy(argument.utilisateur, argv[1]);
-   send(sock, argument.utilisateur, strlen(argument.utilisateur), 0); // envoie du nom d'utilisateur sur le socket
-
-   char *message = NULL;
-   size_t size_mess = 0;
-   ssize_t code;
-   pthread_t second_thread;
-   pthread_create(&second_thread, NULL, &readerThread, &argument); // creation thread lecture
-
-   while ((code = getline(&message, &size_mess, stdin)))
-   {
-      if (code == -1)
-      {
-         break; // tant que stdin est ouvert on peut écrire
-      }
-      process_message(message, size_mess, sock, options, argument);
-   }
-
-   free(message);
-   shutdown(sock, SHUT_RD); // fermeture de lecture du socket permettant au thread lecture de se terminer
-   close(sock);
-   pthread_join(second_thread, NULL);
-   return 0;
+    start_client(argc, argv); // Lancement du client
+    return 0;
 }
