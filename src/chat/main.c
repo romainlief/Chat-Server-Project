@@ -6,10 +6,8 @@
 #include "process.h"
 #include "struct.h"
 
-
 extern liste_t memoire;
 extern OptionsProgramme options;
-
 
 int main(int argc, char *argv[])
 {
@@ -18,22 +16,14 @@ int main(int argc, char *argv[])
 
    const char *port_name = "PORT_SERVEUR";
    const char *port_value = "1234";
-   setenv(port_name, port_value, 1);
-
    const char *IP_name = "IP_SERVEUR";
    const char *IP_value = "127.0.0.1";
-   setenv(IP_name, IP_value, 1);
+
+   set_env_variables(port_name, port_value, IP_name, IP_value);
 
    int sock;
    struct sockaddr_in serv_addr;
-   init_chat(&sock, &serv_addr, port_name, IP_name);
-
-
-   if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
-   {
-      perror("SOCKET NON FAIT");
-      exit(1);
-   }
+   setup_and_connect_socket(&sock, &serv_addr, port_name, IP_name);
 
    if (!options.affichageManuel) // Igniorer SIGINT si pas de Manuel Mod
    {                             // igniore signint
@@ -57,7 +47,6 @@ int main(int argc, char *argv[])
    char *message = NULL;
    size_t size_mess = 0;
    ssize_t code;
-
    pthread_t second_thread;
    pthread_create(&second_thread, NULL, &readerThread, &argument); // creation thread lecture
 
@@ -76,4 +65,3 @@ int main(int argc, char *argv[])
    pthread_join(second_thread, NULL);
    return 0;
 }
-

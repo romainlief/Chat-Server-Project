@@ -41,4 +41,24 @@ int checkPort();
  */
 void init_chat(int *sock, struct sockaddr_in *serv_addr, const char *port_name, const char *IP_name);
 
+/**
+ * @brief Definir les variables d'environnement
+ * 
+ * @param port_name Nom de la variable d'environnement du port
+ * @param port_value Valeur de la variable d'environnement du port
+ * @param IP_name Nom de la variable d'environnement de l'adresse IP
+ * @param IP_value Valeur de la variable d'environnement de l'adresse IP
+ */
+void set_env_variables(const char *port_name, const char *port_value, const char *IP_name, const char *IP_value);
+
+/**
+ * @brief Configurer et connecter le socket
+ * 
+ * @param sock Socket du serveur
+ * @param serv_addr Adresse du serveur
+ * @param port_name Nom de la variable d'environnement du port
+ * @param IP_name Nom de la variable d'environnement de l'adresse IP
+ */
+void setup_and_connect_socket(int *sock, struct sockaddr_in *serv_addr, const char *port_name, const char *IP_name);
+
 #endif // SERVEUR_CONNEXION_H
